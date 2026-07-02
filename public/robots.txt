@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cudem.pages.dev/sitemap-index.xml
+Sitemap: https://cu-dem.pages.dev/sitemap-index.xml

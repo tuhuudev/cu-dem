@@ -23,7 +23,6 @@ faq:
   - q: "Copilot có gói miễn phí không?"
     a: "Có. Copilot Free dùng được code completion và chat với hạn mức giới hạn. Cursor cũng có gói Hobby miễn phí kèm 1 tuần dùng thử Pro."
 ogImage: "/ai-images/cursor-vs-github-copilot-2026-kimi-k27-do-bo-chon-ben-nao.webp"
-draft: true
 ---
 
 ## Vì sao lúc này phải so lại Cursor và GitHub Copilot?

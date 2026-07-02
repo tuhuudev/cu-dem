@@ -3,7 +3,7 @@
 // =============================================================
 
 /** Tên miền chính thức (KHÔNG có dấu / ở cuối). Dùng cho canonical, OG, sitemap. */
-export const SITE_URL = "https://cudem.pages.dev";
+export const SITE_URL = "https://cu-dem.pages.dev";
 
 /** Tên thương hiệu / tên trang — hiển thị ở header và og:site_name */
 export const SITE_NAME = "Cú Đêm";
@@ -54,8 +54,9 @@ export const GISCUS = {
 export const DEFAULT_OG_IMAGE = "/og-default.png";
 
 /** Username Buttondown cho form đăng ký nhận bản tin (để trống = ẩn form).
- *  Lấy tại buttondown.com → Settings. TODO: xác nhận đúng slug (memory ghi "tuhuu.dev"). */
-export const BUTTONDOWN_USERNAME = "tuhuudev";
+ *  Lấy tại buttondown.com → Settings. Đã kiểm tra 2026-07-03: slug "tuhuudev" không tồn tại (404)
+ *  -> để trống để ẩn form, tránh người đọc đăng ký fail âm thầm. Điền lại khi có tài khoản. */
+export const BUTTONDOWN_USERNAME = "";
 
 /** Câu chốt giá trị hiển thị ở hero trang chủ (above-the-fold). */
 export const SITE_TAGLINE =
