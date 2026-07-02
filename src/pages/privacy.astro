@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_NAME } from "../consts";
+---
+
+<BaseLayout
+  title={`Chính sách bảo mật — ${SITE_NAME}`}
+  description={`Chính sách bảo mật của ${SITE_NAME}: cách chúng tôi xử lý dữ liệu, cookie, đường dẫn tiếp thị liên kết và đăng ký nhận bản tin.`}
+  type="website"
+>
+  <section class="page-intro">
+    <h1>Chính sách bảo mật</h1>
+    <p>Cập nhật lần cuối: 30/06/2026</p>
+  </section>
+
+  <article class="prose">
+    <p>
+      <strong>{SITE_NAME}</strong> là website nội dung đánh giá và so sánh công cụ AI &amp; SaaS.
+      Trang tôn trọng quyền riêng tư của bạn và chỉ thu thập dữ liệu tối thiểu cần thiết để vận hành.
+    </p>
+
+    <h2>Dữ liệu chúng tôi thu thập</h2>
+    <ul>
+      <li>
+        <strong>Số liệu truy cập ẩn danh</strong> (lượt xem trang, nguồn truy cập) — chỉ khi công cụ
+        phân tích được bật, và không gắn với danh tính cá nhân của bạn.
+      </li>
+      <li>
+        <strong>Email</strong> — chỉ khi bạn chủ động đăng ký nhận bản tin. Email được lưu tại nhà
+        cung cấp dịch vụ gửi thư (Buttondown) và dùng riêng để gửi nội dung của trang.
+      </li>
+    </ul>
+
+    <h2>Cookie</h2>
+    <p>
+      Trang sử dụng cookie kỹ thuật tối thiểu (ví dụ ghi nhớ chế độ sáng/tối). Các đối tác phân tích
+      hoặc tiếp thị liên kết có thể đặt cookie riêng khi bạn nhấp vào liên kết của họ.
+    </p>
+
+    <h2>Tiếp thị liên kết (Affiliate)</h2>
+    <p>
+      Một số liên kết trên trang là liên kết tiếp thị liên kết. Khi bạn mua hàng hoặc đăng ký dịch vụ
+      qua các liên kết này, chúng tôi có thể nhận hoa hồng mà <em>không</em> làm tăng chi phí của bạn.
+      Việc này không ảnh hưởng đến nội dung đánh giá khách quan của chúng tôi.
+    </p>
+
+    <h2>Chia sẻ dữ liệu</h2>
+    <p>
+      Chúng tôi không bán hay cho thuê dữ liệu cá nhân của bạn. Dữ liệu chỉ được xử lý qua các nhà
+      cung cấp dịch vụ nêu trên để vận hành trang.
+    </p>
+
+    <h2>Quyền của bạn</h2>
+    <p>
+      Bạn có thể hủy đăng ký bản tin bất cứ lúc nào qua liên kết ở cuối mỗi email. Để yêu cầu xóa dữ
+      liệu, hãy liên hệ với chúng tôi.
+    </p>
+
+    <h2>Liên hệ</h2>
+    <p>Mọi thắc mắc về chính sách này, vui lòng liên hệ: thagvip1@gmail.com</p>
+  </article>
+</BaseLayout>

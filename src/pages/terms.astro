@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_NAME } from "../consts";
+---
+
+<BaseLayout
+  title={`Điều khoản sử dụng — ${SITE_NAME}`}
+  description={`Điều khoản sử dụng website ${SITE_NAME} — đánh giá và so sánh công cụ AI & SaaS.`}
+  type="website"
+>
+  <section class="page-intro">
+    <h1>Điều khoản sử dụng</h1>
+    <p>Cập nhật lần cuối: 30/06/2026</p>
+  </section>
+
+  <article class="prose">
+    <p>
+      <strong>{SITE_NAME}</strong> là website cung cấp nội dung đánh giá và so sánh công cụ AI &amp;
+      SaaS. Khi truy cập và sử dụng trang, bạn đồng ý với các điều khoản dưới đây.
+    </p>
+
+    <h2>Nội dung mang tính tham khảo</h2>
+    <ul>
+      <li>
+        Các bài đánh giá, so sánh và đề xuất chỉ mang tính tham khảo, dựa trên thông tin có sẵn tại
+        thời điểm viết. Giá cả, tính năng và chính sách của các công cụ có thể thay đổi.
+      </li>
+      <li>
+        Bạn nên tự kiểm chứng trên trang chính thức của nhà cung cấp trước khi đưa ra quyết định mua
+        hoặc đăng ký.
+      </li>
+    </ul>
+
+    <h2>Tiếp thị liên kết</h2>
+    <p>
+      Trang có thể chứa liên kết tiếp thị liên kết. Chúng tôi có thể nhận hoa hồng khi bạn mua hàng
+      qua các liên kết này, nhưng điều đó không làm thay đổi tính khách quan của nội dung đánh giá.
+    </p>
+
+    <h2>Sở hữu trí tuệ</h2>
+    <p>
+      Nội dung do {SITE_NAME} tạo ra thuộc về {SITE_NAME}. Tên thương hiệu và logo của các công cụ
+      được nhắc đến thuộc về chủ sở hữu tương ứng.
+    </p>
+
+    <h2>Miễn trừ trách nhiệm</h2>
+    <p>
+      Trang được cung cấp "nguyên trạng", không kèm bảo đảm nào. Chúng tôi không chịu trách nhiệm cho
+      bất kỳ thiệt hại nào phát sinh từ việc sử dụng thông tin trên trang.
+    </p>
+
+    <h2>Thay đổi điều khoản</h2>
+    <p>Các điều khoản này có thể được cập nhật; phiên bản mới nhất luôn hiển thị tại trang này.</p>
+
+    <h2>Liên hệ</h2>
+    <p>Mọi thắc mắc về điều khoản, vui lòng liên hệ: thagvip1@gmail.com</p>
+  </article>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+// Form đăng ký nhận bản tin qua Buttondown ($0). Ẩn nếu chưa cấu hình username.
+import { BUTTONDOWN_USERNAME } from "../consts";
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = "Nhận công cụ AI/SaaS đáng dùng mỗi tuần",
+  text = "Mỗi tuần một bản tin ngắn: công cụ mới đáng thử, mẹo dùng và ưu đãi — không spam, huỷ bất cứ lúc nào.",
+} = Astro.props;
+
+const user = BUTTONDOWN_USERNAME?.trim();
+const action = user ? `https://buttondown.com/api/emails/embed-subscribe/${user}` : "";
+const popup = user ? `https://buttondown.com/${user}` : "";
+---
+
+{
+  action && (
+    <section class="newsletter" aria-label="Đăng ký bản tin">
+      <div class="newsletter-inner">
+        <h2>{title}</h2>
+        <p>{text}</p>
+        <form
+          class="newsletter-form"
+          action={action}
+          method="post"
+          target="popupwindow"
+          onsubmit={`window.open('${popup}', 'popupwindow')`}
+        >
+          <input
+            type="email"
+            name="email"
+            inputmode="email"
+            autocomplete="email"
+            required
+            placeholder="email@cua-ban.com"
+            aria-label="Email"
+          />
+          <button type="submit">Đăng ký miễn phí</button>
+        </form>
+        <p class="newsletter-fineprint">Miễn phí. Không chia sẻ email của bạn.</p>
+      </div>
+    </section>
+  )
+}

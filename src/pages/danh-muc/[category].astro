@@ -1,0 +1,55 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import PostCard from "../../components/PostCard.astro";
+import { slugify, readingTime } from "../../utils";
+import { SITE_NAME } from "../../consts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+  const categories = new Map<string, string>();
+  for (const post of posts) {
+    categories.set(slugify(post.data.category), post.data.category);
+  }
+
+  return Array.from(categories.entries()).map(([slug, name]) => {
+    const filtered = posts
+      .filter((p) => slugify(p.data.category) === slug)
+      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+    return {
+      params: { category: slug },
+      props: { name, posts: filtered },
+    };
+  });
+}
+
+const { name, posts } = Astro.props;
+const title = `Chuyên mục: ${name}`;
+const description = `Tất cả bài viết trong chuyên mục ${name} trên ${SITE_NAME}.`;
+---
+
+<BaseLayout title={title} description={description} type="website">
+  <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: name }]} />
+
+  <section class="page-intro">
+    <h1>{name}</h1>
+    <p>{posts.length} bài viết trong chuyên mục này</p>
+  </section>
+
+  <ul class="post-grid">
+    {
+      posts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          category={post.data.category}
+          ogImage={post.data.ogImage}
+          readingTime={readingTime(post.body ?? "")}
+        />
+      ))
+    }
+  </ul>
+</BaseLayout>

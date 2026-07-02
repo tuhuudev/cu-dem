@@ -1,0 +1,115 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { Page, PaginateFunction } from "astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeaturedPost from "../components/FeaturedPost.astro";
+import PostCard from "../components/PostCard.astro";
+import Newsletter from "../components/Newsletter.astro";
+import { SITE_NAME, SITE_DESCRIPTION, SITE_TAGLINE } from "../consts";
+import { readingTime, formatDate } from "../utils";
+
+export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
+  const PAGE_SIZE = 7; // 1 bài nổi bật + 6 bài lưới ở trang đầu
+  const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+  return paginate(posts, { pageSize: PAGE_SIZE });
+}
+
+interface Props {
+  page: Page<CollectionEntry<"posts">>;
+}
+
+const { page } = Astro.props;
+const isFirstPage = page.currentPage === 1;
+// Trang chủ: title giàu từ khóa (không chỉ tên brand) -> tốt cho SEO. Brand vẫn được ghép ở SEO.astro.
+const pageTitle = isFirstPage
+  ? "Đánh giá & so sánh công cụ AI, SaaS cho dev và doanh nghiệp nhỏ"
+  : `${SITE_NAME} — Trang ${page.currentPage}`;
+
+// Trang đầu: bài mới nhất làm nổi bật, còn lại vào lưới
+const featured = isFirstPage ? page.data[0] : null;
+const gridPosts = isFirstPage ? page.data.slice(1) : page.data;
+
+// Trust signals: tổng số bài đánh giá + lần cập nhật gần nhất (tính từ TẤT CẢ bài).
+const allPosts = await getCollection("posts", ({ data }) => !data.draft);
+const postCount = allPosts.length;
+const lastUpdated = allPosts.length
+  ? new Date(Math.max(...allPosts.map((p) => (p.data.updatedDate ?? p.data.pubDate).valueOf())))
+  : null;
+---
+
+<BaseLayout title={pageTitle} description={SITE_DESCRIPTION} type="website">
+  {
+    isFirstPage && (
+      <section class="hero">
+        <h1>{SITE_NAME}</h1>
+        <p class="hero-tagline">{SITE_TAGLINE}</p>
+        <form class="hero-search" action="/tim-kiem" method="get" role="search">
+          <input
+            type="search"
+            name="q"
+            placeholder="Tìm công cụ, vd: ChatGPT, Notion, Canva…"
+            aria-label="Tìm công cụ"
+          />
+          <button type="submit">Tìm</button>
+        </form>
+        {postCount > 0 && (
+          <div class="trust-bar">
+            <span>★ {postCount} bài đánh giá &amp; so sánh</span>
+            {lastUpdated && <span>Cập nhật: {formatDate(lastUpdated)}</span>}
+            <span>Minh bạch <a href="/privacy">tiếp thị liên kết</a></span>
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  {
+    featured && (
+      <FeaturedPost
+        title={featured.data.title}
+        description={featured.data.description}
+        pubDate={featured.data.pubDate}
+        category={featured.data.category}
+        ogImage={featured.data.ogImage}
+        readingTime={readingTime(featured.body ?? "")}
+      />
+    )
+  }
+
+  {gridPosts.length > 0 && <h2 class="section-title">Bài mới nhất</h2>}
+
+  <ul class="post-grid">
+    {
+      gridPosts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          category={post.data.category}
+          ogImage={post.data.ogImage}
+          readingTime={readingTime(post.body ?? "")}
+        />
+      ))
+    }
+  </ul>
+
+  {
+    page.lastPage > 1 && (
+      <nav class="pagination" aria-label="Phân trang">
+        {page.url.prev ? <a href={page.url.prev}>← Trước</a> : <span class="disabled">← Trước</span>}
+        <span class="page-info">Trang {page.currentPage} / {page.lastPage}</span>
+        {page.url.next ? <a href={page.url.next}>Sau →</a> : <span class="disabled">Sau →</span>}
+      </nav>
+    )
+  }
+
+  {
+    page.data.length === 0 && (
+      <p>Chưa có bài viết nào. Thêm file .md vào <code>src/content/posts/</code>.</p>
+    )
+  }
+
+  {isFirstPage && <Newsletter />}
+</BaseLayout>

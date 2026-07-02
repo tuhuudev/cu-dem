@@ -1,0 +1,351 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
+import ShareButtons from "../../components/ShareButtons.astro";
+import RelatedPosts from "../../components/RelatedPosts.astro";
+import Comments from "../../components/Comments.astro";
+import Newsletter from "../../components/Newsletter.astro";
+import Rating from "../../components/Rating.astro";
+import {
+  formatDate,
+  isoDate,
+  slugify,
+  ogImageFor,
+  categoryUrl,
+  tagUrl,
+  categoryGradientCss,
+  readingTime,
+} from "../../utils";
+import { DEFAULT_AUTHOR, SITE_URL, SITE_NAME } from "../../consts";
+import fs from "node:fs";
+import path from "node:path";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+  return posts.map((post) => {
+    const related = posts
+      .filter((p) => p.id !== post.id)
+      .map((p) => {
+        let score = 0;
+        if (p.data.category === post.data.category) score += 3;
+        score += p.data.tags.filter((t) => post.data.tags.includes(t)).length;
+        return { p, score };
+      })
+      .filter((x) => x.score > 0)
+      .sort(
+        (a, b) =>
+          b.score - a.score ||
+          b.p.data.pubDate.valueOf() - a.p.data.pubDate.valueOf()
+      )
+      .slice(0, 3)
+      .map((x) => x.p);
+
+    return {
+      params: { slug: slugify(post.data.title) },
+      props: { post, related },
+    };
+  });
+}
+
+const { post, related } = Astro.props;
+const { data } = post;
+const { Content, headings } = await render(post);
+const author = data.author ?? DEFAULT_AUTHOR;
+const absoluteUrl = new URL(Astro.url.pathname, SITE_URL).href;
+const ogImage = ogImageFor(data.title, data.ogImage);
+const time = readingTime(post.body ?? "");
+const initial = author.charAt(0).toUpperCase();
+const catGradient = categoryGradientCss(data.category);
+
+// Nếu bài nhúng video YouTube -> khai báo VideoObject (video rich result).
+const videoId = (post.body ?? "").match(/youtube\.com\/embed\/([\w-]{11})/)?.[1];
+const video = videoId
+  ? {
+      id: videoId,
+      title: data.title,
+      description: data.description,
+      uploadDate: data.pubDate.toISOString(),
+    }
+  : undefined;
+
+// Breadcrumb cho JSON-LD BreadcrumbList (khớp với <Breadcrumbs> hiển thị).
+const crumbs = [
+  { name: "Trang chủ", url: "/" },
+  { name: data.category, url: categoryUrl(data.category) },
+  { name: data.title },
+];
+
+// Bản đọc audio (do dự án video sinh bằng edge-tts) -> nút "Nghe bài viết".
+const audioSrc = `/audio/${slugify(data.title)}.mp3`;
+const hasAudio = fs.existsSync(path.join(process.cwd(), "public", "audio", `${slugify(data.title)}.mp3`));
+
+// Bài có link tiếp thị liên kết (rel="sponsored") -> hiện banner minh bạch ở đầu bài.
+const hasAffiliate = /rel="[^"]*sponsored/i.test(post.body ?? "");
+const showDisclosure = data.affiliateDisclosure !== false && hasAffiliate;
+
+// CTA cuối bài: lấy link affiliate ĐẦU TIÊN trong bài làm "khuyến nghị" (tự động, không cần cấu hình thêm).
+const ctaMatch = (post.body ?? "").match(
+  /<a href="([^"]+)"[^>]*rel="[^"]*sponsored[^"]*"[^>]*>([^<]+)<\/a>/i
+);
+const cta = ctaMatch ? { url: ctaMatch[1], label: ctaMatch[2].trim() } : null;
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  image={ogImage}
+  type="article"
+  publishDate={data.pubDate}
+  modifiedDate={data.updatedDate}
+  author={author}
+  tags={data.tags}
+  breadcrumbs={crumbs}
+  video={video}
+  news={data.news}
+  faq={data.faq}
+  rating={data.rating}
+  ratingTool={data.ratingTool}
+  ratingSummary={data.ratingSummary}
+  showProgress
+>
+  <article class="article" data-pagefind-body>
+    <Breadcrumbs
+      items={[
+        { label: "Trang chủ", href: "/" },
+        { label: data.category, href: categoryUrl(data.category) },
+        { label: data.title },
+      ]}
+    />
+
+    <header class="article-header">
+      <a class="badge" href={categoryUrl(data.category)} style={`background:${catGradient}`}>{data.category}</a>
+      <h1>{data.title}</h1>
+      <p class="article-lead">{data.description}</p>
+
+      <div class="byline">
+        <span class="avatar" aria-hidden="true" style={`background:${catGradient}`}>{initial}</span>
+        <span class="info">
+          <span class="name">{author}</span>
+          <span class="meta">
+            <time datetime={isoDate(data.pubDate)}>{formatDate(data.pubDate)}</time>
+            {
+              data.updatedDate && (
+                <span class="dot">
+                  Cập nhật <time datetime={isoDate(data.updatedDate)}>{formatDate(data.updatedDate)}</time>
+                </span>
+              )
+            }
+            <span class="dot">{time}</span>
+          </span>
+        </span>
+      </div>
+
+      {
+        data.ogImage && (
+          <img
+            class="article-cover"
+            src={data.ogImage}
+            alt={data.title}
+            width="1200"
+            height="630"
+            fetchpriority="high"
+            decoding="async"
+          />
+        )
+      }
+    </header>
+
+    <div class="article-layout">
+      <TableOfContents headings={headings} />
+
+      <div class="article-main">
+        {
+          data.takeaways.length > 0 && (
+            <aside class="takeaways" aria-label="Ý chính">
+              <p class="takeaways-title">⚡ Ý chính</p>
+              <ul>
+                {data.takeaways.map((t) => (
+                  <li>{t}</li>
+                ))}
+              </ul>
+            </aside>
+          )
+        }
+
+        {
+          hasAudio && (
+            <div class="audio-player">
+              <span class="audio-label">🎧 Nghe bài</span>
+              <audio controls preload="none" src={audioSrc}></audio>
+            </div>
+          )
+        }
+
+        {
+          typeof data.rating === "number" && (
+            <Rating value={data.rating} tool={data.ratingTool} summary={data.ratingSummary} />
+          )
+        }
+
+        {
+          showDisclosure && (
+            <p class="affiliate-disclosure">
+              <strong>Tiết lộ:</strong> Bài viết có chứa liên kết tiếp thị liên kết. Nếu bạn mua hàng
+              hoặc đăng ký qua các liên kết này, chúng tôi có thể nhận hoa hồng mà không làm tăng chi
+              phí của bạn. Điều này không ảnh hưởng đến đánh giá khách quan của chúng tôi.
+            </p>
+          )
+        }
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        {
+          data.faq.length > 0 && (
+            <section class="faq" aria-label="Câu hỏi thường gặp">
+              <h2>Câu hỏi thường gặp</h2>
+              {data.faq.map((f) => (
+                <details class="faq-item">
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </section>
+          )
+        }
+
+        {
+          cta && (
+            <aside class="cta-box" aria-label="Khuyến nghị">
+              <p class="cta-eyebrow">Khuyến nghị của {SITE_NAME}</p>
+              <p class="cta-text">Sẵn sàng trải nghiệm <strong>{cta.label}</strong>?</p>
+              <a class="cta-button" href={cta.url} rel="sponsored nofollow" target="_blank">
+                Dùng thử {cta.label} →
+              </a>
+              <p class="cta-fineprint">Link tiếp thị liên kết — bạn không tốn thêm chi phí.</p>
+            </aside>
+          )
+        }
+
+        {
+          data.tags.length > 0 && (
+            <ul class="tags">
+              {data.tags.map((tag) => (
+                <li><a class="tag" href={tagUrl(tag)}>#{tag}</a></li>
+              ))}
+            </ul>
+          )
+        }
+
+        <ShareButtons url={absoluteUrl} title={data.title} />
+        <Newsletter />
+        <a class="back-link" href="/">← Về trang chủ</a>
+      </div>
+    </div>
+
+    <RelatedPosts posts={related} />
+    <Comments />
+  </article>
+</BaseLayout>
+
+<style>
+  .takeaways {
+    margin: 0 0 1.5rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--border, #e5e7eb);
+    border-left: 4px solid var(--accent, #3b82f6);
+    border-radius: 12px;
+    background: var(--surface, rgba(59, 130, 246, 0.06));
+  }
+  .takeaways-title {
+    margin: 0 0 0.5rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .takeaways ul { margin: 0; padding-left: 1.2rem; }
+  .takeaways li { margin: 0.3rem 0; line-height: 1.5; }
+
+  .audio-player {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    margin: 0 0 1.5rem;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    background: var(--surface, rgba(0, 0, 0, 0.03));
+  }
+  .audio-player .audio-label { font-weight: 600; white-space: nowrap; }
+  .audio-player audio { flex: 1; min-width: 220px; height: 36px; }
+
+  .affiliate-disclosure {
+    margin: 0 0 1.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--text-muted, #6b7280);
+    border: 1px dashed var(--border, #e5e7eb);
+    border-radius: 10px;
+    background: var(--surface, rgba(0, 0, 0, 0.02));
+  }
+
+  .faq {
+    margin: 2rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border, #e5e7eb);
+  }
+  .faq h2 { margin: 0 0 1rem; }
+  .faq-item {
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 10px;
+    padding: 0.85rem 1.1rem;
+    margin: 0.6rem 0;
+    background: var(--surface, rgba(0, 0, 0, 0.02));
+  }
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    line-height: 1.45;
+    list-style: none;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::before { content: "＋ "; color: var(--accent, #3b82f6); font-weight: 700; }
+  .faq-item[open] summary::before { content: "－ "; }
+  .faq-item p { margin: 0.6rem 0 0; line-height: 1.6; }
+
+  .cta-box {
+    margin: 2rem 0 0;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-radius: var(--radius, 16px);
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary, #2563eb) 0%, var(--primary-700, #1e3a8a) 100%);
+  }
+  .cta-eyebrow {
+    margin: 0 0 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+  .cta-text { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 700; }
+  .cta-button {
+    display: inline-block;
+    background: #fff;
+    color: var(--primary-700, #1e3a8a);
+    font-weight: 800;
+    padding: 12px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+  }
+  .cta-button:hover { opacity: 0.92; text-decoration: none; }
+  .cta-fineprint { margin: 0.75rem 0 0; font-size: 0.78rem; opacity: 0.8; }
+</style>

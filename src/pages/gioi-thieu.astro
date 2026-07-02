@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE_NAME } from "../consts";
+---
+
+<BaseLayout
+  title={`Giới thiệu — ${SITE_NAME}`}
+  description={`${SITE_NAME} là ai, review công cụ AI & SaaS theo phương pháp nào, và chính sách tiếp thị liên kết minh bạch của trang.`}
+  type="website"
+>
+  <section class="page-intro">
+    <h1>Giới thiệu về {SITE_NAME}</h1>
+    <p>Soi kỹ công cụ AI &amp; SaaS — để bạn chọn đúng, không tốn thời gian thử sai.</p>
+  </section>
+
+  <article class="prose">
+    <h2>{SITE_NAME} là gì?</h2>
+    <p>
+      <strong>{SITE_NAME}</strong> là trang tiếng Việt chuyên <strong>đánh giá và so sánh công cụ AI
+      &amp; SaaS</strong> cho developer và doanh nghiệp nhỏ. Thị trường công cụ đổi mới từng tuần,
+      quảng cáo thì hứa hẹn quá lời — {SITE_NAME} ra đời để trả lời một câu hỏi đơn giản:
+      <em>công cụ này có đáng tiền với đúng nhu cầu của bạn không?</em>
+    </p>
+
+    <h2>Phương pháp review</h2>
+    <ul>
+      <li>
+        <strong>Dựa trên dữ liệu thực tế:</strong> mỗi bài đều được tra cứu từ nguồn công khai
+        (trang chủ sản phẩm, bảng giá, tài liệu, báo công nghệ) và liệt kê nguồn tham khảo ở cuối bài.
+        Chúng tôi không bịa số liệu.
+      </li>
+      <li>
+        <strong>Nói thẳng nhược điểm:</strong> mọi bài review đều có mục Ưu điểm / Nhược điểm.
+        Không có công cụ nào hoàn hảo, và bài viết phải nói rõ khi nào <em>không nên</em> dùng.
+      </li>
+      <li>
+        <strong>Gợi ý theo nhu cầu:</strong> thay vì kết luận chung chung, bài viết gợi ý lựa chọn
+        theo từng trường hợp sử dụng và ngân sách cụ thể.
+      </li>
+    </ul>
+
+    <h2>Chính sách tiếp thị liên kết (affiliate)</h2>
+    <p>
+      Một số bài viết có thể chứa liên kết tiếp thị liên kết. Khi bạn đăng ký dịch vụ qua các liên
+      kết này, {SITE_NAME} có thể nhận hoa hồng — <strong>không làm tăng chi phí của bạn</strong>.
+      Nguyên tắc của trang: đánh giá viết trước, liên kết chèn sau; hoa hồng không ảnh hưởng đến
+      điểm số hay kết luận của bài. Bài nào có liên kết affiliate đều hiển thị banner công khai ở đầu bài.
+    </p>
+
+    <h2>Liên hệ</h2>
+    <p>
+      Bạn có góp ý, phát hiện thông tin sai, hoặc muốn đề xuất công cụ để review? Gửi email về:
+      <a href="mailto:thagvip1@gmail.com">thagvip1@gmail.com</a>. Chúng tôi đọc mọi email và cập
+      nhật bài viết khi có thông tin mới.
+    </p>
+  </article>
+</BaseLayout>

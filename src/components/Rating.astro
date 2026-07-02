@@ -1,0 +1,88 @@
+---
+// Hộp chấm điểm biên tập cho bài review 1 công cụ. Hiển thị sao + điểm + nhận xét.
+// Chỉ render khi có `value`. JSON-LD Review được phát ở SEO.astro (không lặp ở đây).
+interface Props {
+  value: number; // 0-5
+  tool?: string;
+  summary?: string;
+}
+const { value, tool, summary } = Astro.props;
+const clamped = Math.max(0, Math.min(5, value));
+const full = Math.floor(clamped);
+const half = clamped - full >= 0.5;
+const stars = Array.from({ length: 5 }, (_, i) =>
+  i < full ? "full" : i === full && half ? "half" : "empty"
+);
+const display = Number.isInteger(clamped) ? `${clamped}` : clamped.toFixed(1);
+---
+
+<aside class="rating-box" aria-label={`Điểm đánh giá${tool ? ` ${tool}` : ""}`}>
+  <div class="rating-score">
+    <span class="rating-num">{display}</span><span class="rating-out">/5</span>
+  </div>
+  <div class="rating-body">
+    <div class="rating-stars" role="img" aria-label={`${display} trên 5 sao`}>
+      {stars.map((s) => (
+        <span class={`star star--${s}`}>★</span>
+      ))}
+    </div>
+    {tool && <p class="rating-tool">Đánh giá <strong>{tool}</strong></p>}
+    {summary && <p class="rating-summary">{summary}</p>}
+  </div>
+</aside>
+
+<style>
+  .rating-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1.5rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 12px;
+    background: var(--bg-soft, rgba(0, 0, 0, 0.03));
+  }
+  .rating-score {
+    display: flex;
+    align-items: baseline;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .rating-num {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--primary, #2563eb);
+  }
+  .rating-out {
+    font-size: 1rem;
+    color: var(--muted, #64748b);
+    margin-left: 2px;
+  }
+  .rating-stars {
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .star--full {
+    color: #f59e0b;
+  }
+  .star--half {
+    background: linear-gradient(90deg, #f59e0b 50%, var(--border, #d1d5db) 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .star--empty {
+    color: var(--border, #d1d5db);
+  }
+  .rating-tool {
+    margin: 0.4rem 0 0;
+    font-size: 0.95rem;
+  }
+  .rating-summary {
+    margin: 0.2rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted, #64748b);
+    line-height: 1.5;
+  }
+</style>

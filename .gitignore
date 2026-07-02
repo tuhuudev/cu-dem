@@ -1,0 +1,21 @@
+# build output
+dist/
+# ảnh OG tự sinh (build sẽ tạo lại)
+public/og/
+# ảnh chụp màn hình để review (công cụ dev)
+scripts/shots/
+# bài viết sinh tự động từ Google Sheet (build tạo lại)
+src/content/posts/sheet-*.md
+# file tạm khi dò trend (npm run ai:trends -- --json)
+trends.json
+# generated types
+.astro/
+# dependencies
+node_modules/
+# logs
+npm-debug.log*
+# environment
+.env
+.env.production
+# macOS
+.DS_Store

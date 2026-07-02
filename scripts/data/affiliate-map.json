@@ -1,0 +1,24 @@
+{
+  "_comment": "Keyword -> affiliate link. PLACEHOLDER URLs (chua co network that). Doi 'url' sang link that khi da duyet network. 'keyword' khong phan biet hoa thuong, khop nguyen tu/cum tu. Toi da 1 link/keyword/bai (xem affiliate.mjs).",
+  "links": [
+    { "keyword": "ChatGPT", "url": "https://example.com/aff/chatgpt?ref=cudem", "network": "placeholder", "label": "Dung thu ChatGPT" },
+    { "keyword": "ChatGPT Plus", "url": "https://example.com/aff/chatgpt-plus?ref=cudem", "network": "placeholder", "label": "Nang cap ChatGPT Plus" },
+    { "keyword": "Notion", "url": "https://example.com/aff/notion?ref=cudem", "network": "placeholder", "label": "Dung Notion mien phi" },
+    { "keyword": "Notion AI", "url": "https://example.com/aff/notion-ai?ref=cudem", "network": "placeholder", "label": "Kich hoat Notion AI" },
+    { "keyword": "Grammarly", "url": "https://example.com/aff/grammarly?ref=cudem", "network": "placeholder", "label": "Cai Grammarly" },
+    { "keyword": "Jasper", "url": "https://example.com/aff/jasper?ref=cudem", "network": "placeholder", "label": "Trai nghiem Jasper" },
+    { "keyword": "Canva", "url": "https://example.com/aff/canva?ref=cudem", "network": "placeholder", "label": "Tao thiet ke voi Canva" },
+    { "keyword": "Figma", "url": "https://example.com/aff/figma?ref=cudem", "network": "placeholder", "label": "Bat dau voi Figma" },
+    { "keyword": "GitHub Copilot", "url": "https://example.com/aff/github-copilot?ref=cudem", "network": "placeholder", "label": "Dung GitHub Copilot" },
+    { "keyword": "Midjourney", "url": "https://example.com/aff/midjourney?ref=cudem", "network": "placeholder", "label": "Tao anh voi Midjourney" },
+    { "keyword": "Zapier", "url": "https://example.com/aff/zapier?ref=cudem", "network": "placeholder", "label": "Tu dong hoa voi Zapier" },
+    { "keyword": "Make", "url": "https://example.com/aff/make?ref=cudem", "network": "placeholder", "label": "Dung Make (Integromat)" },
+    { "keyword": "Surfer SEO", "url": "https://example.com/aff/surfer-seo?ref=cudem", "network": "placeholder", "label": "Toi uu voi Surfer SEO" },
+    { "keyword": "Ahrefs", "url": "https://example.com/aff/ahrefs?ref=cudem", "network": "placeholder", "label": "Phan tich voi Ahrefs" },
+    { "keyword": "Semrush", "url": "https://example.com/aff/semrush?ref=cudem", "network": "placeholder", "label": "Dung Semrush" },
+    { "keyword": "ConvertKit", "url": "https://example.com/aff/convertkit?ref=cudem", "network": "placeholder", "label": "Email voi ConvertKit" },
+    { "keyword": "ElevenLabs", "url": "https://example.com/aff/elevenlabs?ref=cudem", "network": "placeholder", "label": "Tao giong noi ElevenLabs" },
+    { "keyword": "Perplexity", "url": "https://example.com/aff/perplexity?ref=cudem", "network": "placeholder", "label": "Tim kiem voi Perplexity" },
+    { "keyword": "Claude", "url": "https://example.com/aff/claude?ref=cudem", "network": "placeholder", "label": "Dung thu Claude" }
+  ]
+}

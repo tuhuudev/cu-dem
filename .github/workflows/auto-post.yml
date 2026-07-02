@@ -1,0 +1,58 @@
+# Tu dong tao bai DRAFT tu trend 2 lan/tuan (thu 2 & thu 5, ~9h sang VN).
+# Bai luon o dang draft: true -> khong hien tren web cho toi khi ban duyet
+# (mo file .md, xoa dong "draft: true", commit).
+#
+# Yeu cau (Settings -> Secrets and variables -> Actions):
+#   GEMINI_API_KEY   (bat buoc)
+#   YOUTUBE_API_KEY, PEXELS_API_KEY, PIXABAY_API_KEY,
+#   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_BASE
+#   (tuy chon — thieu thi script tu bo qua tinh nang tuong ung)
+# Va: Settings -> Actions -> General -> Workflow permissions -> "Read and write permissions".
+
+name: Auto trend post (draft)
+
+on:
+  schedule:
+    - cron: "0 2 * * 1,4" # 02:00 UTC = 09:00 VN, thu 2 va thu 5
+  workflow_dispatch: # cho phep chay tay tu tab Actions
+
+permissions:
+  contents: write
+
+jobs:
+  draft-post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate draft post from trends
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+        run: npm run ai:auto
+
+      - name: Commit draft post
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/posts public/ai-images
+          if git diff --cached --quiet; then
+            echo "No new post generated, nothing to commit."
+          else
+            git commit -m "content: add auto-generated draft post from trends"
+            git push
+          fi

@@ -1,0 +1,62 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const { headings } = Astro.props;
+// Chỉ lấy H2 và H3 cho mục lục
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  toc.length > 1 && (
+    <nav class="toc" aria-label="Contents">
+      <p class="toc-title">Nội dung</p>
+      <ul>
+        {toc.map((h) => (
+          <li class={`depth-${h.depth}`}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  /* TOC dính theo khi cuộn (chỉ trên màn rộng có sidebar) */
+  @media (min-width: 1024px) {
+    .toc {
+      position: sticky;
+      top: 1.5rem;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Tô sáng mục đang xem khi cuộn
+  (() => {
+    const links = document.querySelectorAll(".toc a");
+    if (!links.length) return;
+    const map = new Map();
+    links.forEach((a) => map.set(a.getAttribute("href").slice(1), a));
+    const headings = [...map.keys()]
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            links.forEach((l) => l.classList.remove("active"));
+            map.get(e.target.id)?.classList.add("active");
+          }
+        });
+      },
+      { rootMargin: "-80px 0px -70% 0px" }
+    );
+    headings.forEach((h) => obs.observe(h));
+  })();
+</script>
