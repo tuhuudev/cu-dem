@@ -32,6 +32,7 @@ Dò trend (RSS miễn phí) ──► Gemini chọn đề tài ──► Viết 
 | `npm run ai:trends` | Dò trend, gợi ý đề tài |
 | `npm run ai:auto` | Dò trend → tự tạo 1 bài **draft** (thêm `-- --count 3` để tạo 3 bài) |
 | `npm run ai:post -- "Chủ đề"` | Viết bài từ chủ đề tự chọn |
+| `npm run deploy` | Build + đẩy lên Cloudflare Pages (site: https://cu-dem.pages.dev) |
 | `npm run index:ping` | Ping IndexNow sau khi deploy |
 
 Duyệt bài draft: mở file `.md` trong `src/content/posts/`, đọc/sửa nội dung, xóa dòng `draft: true`, commit + push.
@@ -65,14 +66,28 @@ npm run ai:trends -- --claude            # chỉ dò + xếp hạng đề tài
 
 **Không commit `.env`** (đã có trong `.gitignore`).
 
+## Deploy (Cloudflare Pages — project `cu-dem`)
+
+Site live tại **https://cu-dem.pages.dev**, deploy theo kiểu **direct upload**:
+
+```bash
+npm run deploy   # build + wrangler pages deploy (cần wrangler đã đăng nhập)
+```
+
+> Lưu ý: `git push` KHÔNG tự deploy (project chưa nối Git). Muốn tự deploy khi push, vào
+> dash.cloudflare.com → Pages → cu-dem → Settings → nối repo `tuhuudev/cu-dem`,
+> hoặc cứ dùng `npm run deploy` sau mỗi lần duyệt bài.
+
 ## Tự động đăng bài theo lịch (GitHub Actions)
 
-Workflow `.github/workflows/auto-post.yml` chạy `npm run ai:auto` thứ 2 & thứ 5 hằng tuần, commit bài **draft** vào repo. Để kích hoạt:
+Workflow `.github/workflows/auto-post.yml` chạy `npm run ai:auto` (engine gemini) thứ 2 & thứ 5 hằng tuần, commit bài **draft** vào repo `tuhuudev/cu-dem`. Để kích hoạt, chạy 2 lệnh (cần làm 1 lần):
 
-1. Tạo repo GitHub, push code lên (xem `DEPLOY.md`).
-2. **Settings → Secrets and variables → Actions**: thêm `GEMINI_API_KEY` (và các key tùy chọn ở trên).
-3. **Settings → Actions → General → Workflow permissions**: chọn *Read and write permissions*.
-4. Có thể chạy tay từ tab **Actions → Auto trend post → Run workflow**.
+```bash
+gh secret set GEMINI_API_KEY -R tuhuudev/cu-dem   # dán key khi được hỏi
+gh api -X PUT repos/tuhuudev/cu-dem/actions/permissions/workflow -f default_workflow_permissions=write
+```
+
+Có thể chạy tay từ tab **Actions → Auto trend post → Run workflow**.
 
 ## Việc cần cấu hình trước khi vận hành thật (trong `src/consts.ts`)
 
