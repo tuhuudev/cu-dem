@@ -14,10 +14,12 @@ import {
   DEFAULT_TEXT_MODEL,
   loadDotEnv,
   requireApiKey,
+  resolveEngine,
   geminiGenerate,
   getText,
   parseJsonArray,
 } from "./lib/ai-post.mjs";
+import { claudeGenerate, requireClaude } from "./lib/claude.mjs";
 
 // Nguon trend mien phi (RSS cong khai). "category" la goi y chuyen muc cho blog.
 const SOURCES = [
@@ -167,19 +169,29 @@ Sap xep theo score giam dan.
 `).trim();
 }
 
-// Lay tin tho -> nho Gemini xep hang -> tra ve danh sach chu de goi y.
-export async function fetchTrendIdeas({ count = 8, apiKey, textModel } = {}) {
+// Lay tin tho -> nho AI xep hang (Gemini hoac Claude Code) -> tra ve danh sach chu de goi y.
+export async function fetchTrendIdeas({ count = 8, apiKey, textModel, engine } = {}) {
   const raw = await fetchRawTrends();
   if (raw.length === 0) throw new Error("Khong lay duoc tin trend nao (mang loi?).");
-
-  const key = apiKey || requireApiKey();
-  const model = textModel || process.env.GEMINI_TEXT_MODEL || DEFAULT_TEXT_MODEL;
 
   const existing = await fetchExistingTitles();
   if (existing.length) console.log(`[trends] Da co ${existing.length} bai (local) -> tranh trung.`);
 
+  const prompt = buildRankPrompt(raw, count, existing);
+
+  if (resolveEngine({ engine }) === "claude") {
+    requireClaude();
+    const text = await claudeGenerate(
+      prompt + "\n\nTra ve DUY NHAT mang JSON, khong kem text nao khac.",
+      { model: process.env.CLAUDE_MODEL }
+    );
+    return parseJsonArray(text).slice(0, count);
+  }
+
+  const key = apiKey || requireApiKey();
+  const model = textModel || process.env.GEMINI_TEXT_MODEL || DEFAULT_TEXT_MODEL;
   const response = await geminiGenerate(model, key, {
-    contents: [{ parts: [{ text: buildRankPrompt(raw, count, existing) }] }],
+    contents: [{ parts: [{ text: prompt }] }],
     generationConfig: { temperature: 0.6, responseMimeType: "application/json" },
   });
   const text = getText(response);
@@ -195,6 +207,8 @@ function parseArgs(argv) {
     if (arg === "--count") opts.count = parseInt(argv[++i], 10) || opts.count;
     else if (arg === "--raw") opts.raw = true;
     else if (arg === "--json") opts.json = true;
+    else if (arg === "--engine") opts.engine = argv[++i] || "";
+    else if (arg === "--claude") opts.engine = "claude";
     else if (arg === "--help" || arg === "-h") opts.help = true;
   }
   return opts;
@@ -208,8 +222,9 @@ async function main() {
 Do trend va goi y chu de bai viet.
   npm run ai:trends                 In danh sach chu de goi y
   npm run ai:trends -- --count 10   Lay nhieu hon
-  npm run ai:trends -- --raw        Chi xem tin tho (khong dung Gemini)
+  npm run ai:trends -- --raw        Chi xem tin tho (khong dung AI)
   npm run ai:trends -- --json       Ghi ket qua ra trends.json
+  npm run ai:trends -- --claude     Dung Claude Code (goi tra phi) thay Gemini API
 `);
     return;
   }
@@ -225,8 +240,9 @@ Do trend va goi y chu de bai viet.
     return;
   }
 
-  console.log("[trends] Dang do tin nong va nho Gemini chon loc...");
-  const ideas = await fetchTrendIdeas({ count: opts.count });
+  const engine = resolveEngine(opts);
+  console.log(`[trends] Dang do tin nong va nho ${engine === "claude" ? "Claude Code" : "Gemini"} chon loc...`);
+  const ideas = await fetchTrendIdeas({ count: opts.count, engine });
 
   console.log(`\n[trends] ${ideas.length} chu de goi y:\n`);
   ideas.forEach((idea, i) => {

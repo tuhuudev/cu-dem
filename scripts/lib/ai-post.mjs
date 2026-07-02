@@ -11,6 +11,7 @@ import { fetchSourceImage } from "./source-image.mjs";
 import { findYouTubeEmbed, isYouTubeConfigured } from "./youtube.mjs";
 import { toWebp } from "./image.mjs";
 import { insertAffiliateLinks, loadAffiliateMap } from "./affiliate.mjs";
+import { claudeGenerate } from "./claude.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(__dirname, "..", "..");
@@ -46,6 +47,15 @@ export function requireApiKey() {
     throw new Error("Missing GEMINI_API_KEY. Put it in .env or set it in the shell.");
   }
   return apiKey;
+}
+
+/** Engine sinh noi dung: "gemini" (API, mac dinh) hoac "claude" (Claude Code headless, dung goi tra phi). */
+export function resolveEngine(opts = {}) {
+  const engine = opts.engine || process.env.AI_ENGINE || "gemini";
+  if (engine !== "gemini" && engine !== "claude") {
+    throw new Error(`Engine khong hop le: "${engine}" (chi ho tro: gemini, claude).`);
+  }
+  return engine;
 }
 
 export function slugify(input) {
@@ -258,10 +268,20 @@ Neu thong tin chua ro rang hoac trai chieu, hay noi ro.
   return { brief, sources: out.slice(0, 12) };
 }
 
-function buildPostPrompt(opts, research) {
+function buildPostPrompt(opts, research, engine = "gemini") {
   const contextBlock = opts.context
     ? `\nBoi canh / goc viet (dua tren tin dang nong, hay khai thac nhung khong sao chep):\n${opts.context}\n`
     : "";
+  // Engine claude: model tu tra cuu bang tool WebSearch (khong co buoc grounding rieng).
+  const claudeResearchBlock =
+    engine === "claude" && opts.grounded !== false
+      ? `
+CACH LAM VIEC (BAT BUOC, theo thu tu):
+1. Dung tool WebSearch tra cuu chu de truoc khi viet (3-6 luot tim voi tu khoa khac nhau: ten cong cu, bang gia, review, so sanh, tin moi nhat). Co the dung WebFetch de doc ky trang quan trong.
+2. CHI dung thong tin tim duoc; TUYET DOI khong bja so lieu, gia, hay trich dan.
+3. Uu tien nguon chinh thong (trang chu san pham, tai lieu, bao cong nghe). Tranh Reddit/Quora/forum.
+`
+      : "";
   const hasResearch = research?.brief?.trim();
   const researchBlock = hasResearch
     ? `\nDU LIEU THUC TE da tra cuu (CHI dung thong tin nay, TUYET DOI khong bja them so lieu/trich dan):\n${research.brief}\n` +
@@ -274,13 +294,24 @@ function buildPostPrompt(opts, research) {
   const factRule = hasResearch
     ? `- Bai phai dua tren DU LIEU THUC TE o tren. Neu thieu thong tin, viet chung chung mot cach trung thuc, KHONG bja.
 - Ket bai bang muc "## Nguon tham khao" liet ke cac nguon o tren (link Markdown).`
-    : `- Neu bai dua tren tin thoi su: giai thich boi canh, y nghia, tac dong; KHONG bja so lieu hay trich dan gia.`;
+    : engine === "claude" && opts.grounded !== false
+      ? `- Bai phai dua tren ket qua WebSearch. Neu thieu thong tin, viet chung chung mot cach trung thuc, KHONG bja.
+- Ket bai bang muc "## Nguon tham khao" liet ke cac nguon THAT da dung (link Markdown, dung URL goc).`
+      : `- Neu bai dua tren tin thoi su: giai thich boi canh, y nghia, tac dong; KHONG bja so lieu hay trich dan gia.`;
+  const sourcesField =
+    engine === "claude"
+      ? `\n  "sources": [{"title": "Ten nguon", "uri": "https://..."}],`
+      : "";
+  const sourcesNote =
+    engine === "claude"
+      ? `\n- "sources": 3-10 nguon web THAT ban da dung khi tra cuu (URL goc, KHONG duoc bja). De mang rong [] neu khong tra cuu.`
+      : "";
 
   return `
 Ban la bien tap vien chuyen danh gia & so sanh cong cu AI / SaaS cho Cu Dem (trang tieng Viet cho dev va doanh nghiep nho).
 
 Hay viet mot bai danh gia/so sanh hoan chinh, dang tin cay (chuan E-E-A-T) ve chu de: "${opts.topic}".
-${contextBlock}${researchBlock}
+${contextBlock}${claudeResearchBlock}${researchBlock}
 Yeu cau noi dung:
 - Ngon ngu: tieng Viet tu nhien, ro rang. Giu nguyen ten cong cu/thuong hieu bang tieng Anh (vd ChatGPT, Notion).
 - Do dai muc tieu: ${opts.words} tu.
@@ -312,18 +343,57 @@ Tra ve DUY NHAT JSON hop le, khong markdown fence, theo schema:
   "ratingSummary": "1 cau nhan xet tong (vi sao diem do)",
   "imagePrompt": "Prompt tieng Anh de tao anh cover 16:9, khong chu, khong logo, khong watermark",
   "imageQuery": "2-4 tu khoa tieng Anh DON GIAN de tim anh stock (vd: laptop workspace, ai chatbot)",
-  "videoQuery": "2-5 tu khoa tieng Viet GON, SAT chu de de tim video YouTube minh hoa (vd: review notion cho nguoi moi)",
+  "videoQuery": "2-5 tu khoa tieng Viet GON, SAT chu de de tim video YouTube minh hoa (vd: review notion cho nguoi moi)",${sourcesField}
   "body": "Noi dung Markdown (gom bang so sanh, Uu diem/Nhuoc diem, va muc Nguon tham khao neu co du lieu thuc te)"
 }
-Luu y:
+Luu y:${sourcesNote}
 - "faq" gom 3-5 cau hoi nguoi dung that su tim kiem (vd gia, mien phi khong, hop voi ai), tra loi NGAN va dua tren du lieu that.
 - "rating"/"ratingTool"/"ratingSummary": CHI dien khi bai review DUY NHAT 1 cong cu (cham diem cong cu do, 0-5, mot chu so thap phan). Neu bai SO SANH nhieu cong cu -> de rating = null va bo ratingTool/ratingSummary.
 `.trim();
 }
 
+// Engine claude: MOT loi goi Claude Code headless — model tu WebSearch roi tra JSON
+// (kem "sources" that). Tra ve { post, research } cung shape voi duong gemini.
+async function generatePostClaude(opts, { attempts = 2 } = {}) {
+  const grounded = opts.grounded !== false;
+  const prompt =
+    buildPostPrompt(opts, null, "claude") +
+    "\n\nQUAN TRONG: Tra ve DUY NHAT JSON hop le o tren, khong kem loi dan hay text nao khac.";
+
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const text = await claudeGenerate(prompt, {
+        model: opts.claudeModel || process.env.CLAUDE_MODEL,
+        webSearch: grounded,
+      });
+      const post = parseJsonObject(text);
+      post.body = stripLeadingTitle(post.body, post.title);
+      const sources = (Array.isArray(post.sources) ? post.sources : [])
+        .filter((s) => s && s.uri && /^https?:\/\//.test(s.uri))
+        .map((s) => ({ title: s.title || s.uri, uri: s.uri }))
+        .slice(0, 12);
+      delete post.sources;
+      if (grounded && sources.length === 0) {
+        throw new Error(
+          "Claude khong tra ve nguon that (sources) -> bo bai (tranh bja). Dung --no-grounding de viet chay."
+        );
+      }
+      return { post, research: { brief: "", sources } };
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts - 1) console.warn(`[ai] ${e.message} -> thu tao lai...`);
+    }
+  }
+  throw lastErr;
+}
+
 // Tra ve { post, research }. Mac dinh BAT BUOC grounding co nguon (tranh bja);
 // dung --no-grounding (opts.grounded=false) de viet chay khi can.
 export async function generatePost(opts, apiKey, { attempts = 2 } = {}) {
+  if (resolveEngine(opts) === "claude") {
+    return generatePostClaude(opts, { attempts });
+  }
   // Buoc 1: tra cuu thuc te (grounding).
   let research = null;
   if (opts.grounded !== false) {
@@ -494,7 +564,13 @@ function frontmatter(post, opts, ogImage) {
 
 // Sinh noi dung bai + anh cover (KHONG luu vao dau). Tra ve { post, slug, ogImage }.
 export async function generatePostBundle(opts, apiKey) {
-  console.log(`[ai] Generating post with ${opts.textModel}...`);
+  const engine = resolveEngine(opts);
+  // Engine claude khong tao anh AI (khong co Gemini key) -> ha ve anh bai nguon/stock.
+  if (engine === "claude" && resolveImageSource(opts) === "gemini") {
+    console.warn('[ai] Engine claude khong ho tro anh AI (gemini) -> chuyen sang nguon "source".');
+    opts.imageSource = "source";
+  }
+  console.log(`[ai] Generating post with ${engine === "claude" ? "Claude Code" : opts.textModel}...`);
   const { post, research } = await generatePost(opts, apiKey);
 
   const slug = slugify(post.title || opts.topic);

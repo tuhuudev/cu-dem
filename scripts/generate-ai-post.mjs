@@ -10,9 +10,11 @@ import {
   DEFAULT_IMAGE_MODEL,
   loadDotEnv,
   requireApiKey,
+  resolveEngine,
   generatePostBundle,
   writePostFile,
 } from "./lib/ai-post.mjs";
+import { requireClaude } from "./lib/claude.mjs";
 
 function parseArgs(argv) {
   const opts = {
@@ -50,6 +52,9 @@ function parseArgs(argv) {
     else if (arg === "--model") opts.textModel = next();
     else if (arg === "--image-model") opts.imageModel = next();
     else if (arg === "--words") opts.words = next();
+    else if (arg === "--engine") opts.engine = next();
+    else if (arg === "--claude") opts.engine = "claude";
+    else if (arg === "--claude-model") opts.claudeModel = next();
     else positional.push(arg);
   }
   opts.topic = positional.join(" ").trim();
@@ -66,11 +71,18 @@ Commands:
   npm run ai:post -- "Chu de bai viet"
   npm run ai:post -- "AI marketing cho shop nho" --category "Marketing" --tags "AI, ban hang"
   npm run ai:post -- "Kinh nghiem du lich Da Lat" --draft           (them draft: true)
+  npm run ai:post -- "Chu de" --claude                              (dung Claude Code, khong can API key)
+
+Engine (--engine claude|gemini, mac dinh gemini hoac env AI_ENGINE):
+  gemini   Goi Gemini API (can GEMINI_API_KEY)
+  claude   Goi Claude Code headless (dung goi Claude tra phi, tu WebSearch)
 
 Environment:
-  GEMINI_API_KEY       Required
+  AI_ENGINE            Optional, "claude" hoac "gemini"
+  GEMINI_API_KEY       Required khi engine gemini
   GEMINI_TEXT_MODEL    Optional, default ${DEFAULT_TEXT_MODEL}
   GEMINI_IMAGE_MODEL   Optional, default ${DEFAULT_IMAGE_MODEL}
+  CLAUDE_MODEL         Optional, model cho engine claude (vd "opus", "sonnet")
   R2_*                 De luu anh len Cloudflare R2 (xem huong dan)
 `);
 }
@@ -84,7 +96,10 @@ async function main() {
     throw new Error("Missing topic.");
   }
 
-  const apiKey = requireApiKey();
+  const engine = resolveEngine(opts);
+  let apiKey = "";
+  if (engine === "claude") requireClaude();
+  else apiKey = requireApiKey();
   const { post, slug, ogImage } = await generatePostBundle(opts, apiKey);
 
   const outPath = await writePostFile(post, opts, ogImage, slug);

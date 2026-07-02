@@ -14,9 +14,11 @@ import {
   DEFAULT_IMAGE_MODEL,
   loadDotEnv,
   requireApiKey,
+  resolveEngine,
   generatePostBundle,
   writePostFile,
 } from "./lib/ai-post.mjs";
+import { requireClaude } from "./lib/claude.mjs";
 import { fetchTrendIdeas } from "./fetch-trends.mjs";
 
 function parseArgs(argv) {
@@ -44,6 +46,9 @@ function parseArgs(argv) {
     else if (arg === "--no-grounding") opts.grounded = false;
     else if (arg === "--no-youtube") opts.youtube = false;
     else if (arg === "--words") opts.words = argv[++i] ?? opts.words;
+    else if (arg === "--engine") opts.engine = argv[++i] || "";
+    else if (arg === "--claude") opts.engine = "claude";
+    else if (arg === "--claude-model") opts.claudeModel = argv[++i] || "";
     else if (arg === "--help" || arg === "-h") opts.help = true;
   }
   return opts;
@@ -60,14 +65,18 @@ Mac dinh tao BAN NHAP (draft: true, chua hien tren web) de ban duyet truoc.
   npm run ai:auto -- --count 3     Tao 3 bai nhap
   npm run ai:auto -- --publish     Dang thang (khong draft -> hien luon)
   npm run ai:auto -- --no-image    Khong tao anh
+  npm run ai:auto -- --claude      Dung Claude Code (goi tra phi) thay Gemini API
 `);
     return;
   }
 
-  const apiKey = requireApiKey();
+  const engine = resolveEngine(opts);
+  let apiKey = "";
+  if (engine === "claude") requireClaude();
+  else apiKey = requireApiKey();
 
-  console.log("[auto] Dang do tin nong va chon chu de...");
-  const ideas = await fetchTrendIdeas({ count: Math.max(opts.count, 3), apiKey, textModel: opts.textModel });
+  console.log(`[auto] Dang do tin nong va chon chu de (engine: ${engine})...`);
+  const ideas = await fetchTrendIdeas({ count: Math.max(opts.count, 3), apiKey, textModel: opts.textModel, engine });
   if (ideas.length === 0) throw new Error("Khong tim duoc chu de phu hop.");
 
   const picked = ideas.slice(0, opts.count);
@@ -90,6 +99,8 @@ Mac dinh tao BAN NHAP (draft: true, chua hien tren web) de ban duyet truoc.
         imageSource: opts.imageSource,
         grounded: opts.grounded,
         youtube: opts.youtube,
+        engine,
+        claudeModel: opts.claudeModel,
         textModel: opts.textModel,
         imageModel: opts.imageModel,
         words: opts.words,

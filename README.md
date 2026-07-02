@@ -36,6 +36,26 @@ Dò trend (RSS miễn phí) ──► Gemini chọn đề tài ──► Viết 
 
 Duyệt bài draft: mở file `.md` trong `src/content/posts/`, đọc/sửa nội dung, xóa dòng `draft: true`, commit + push.
 
+## Engine sinh bài: Gemini API hoặc Claude Code
+
+Pipeline hỗ trợ 2 engine, chọn bằng flag `--engine claude|gemini` (hoặc `--claude`), hoặc đặt `AI_ENGINE=claude` trong `.env` để làm mặc định:
+
+| | `gemini` (mặc định) | `claude` |
+|---|---|---|
+| Cần gì | `GEMINI_API_KEY` | Đã cài + đăng nhập Claude Code CLI (gói Pro/Max) |
+| Chi phí | Free tier / theo API | Trừ vào quota gói trả phí — 0 đồng thêm |
+| Grounding | Google Search grounding | Claude tự WebSearch/WebFetch, trả nguồn thật |
+| Ảnh AI | Có (`--ai-image`) | Không — tự hạ về ảnh bài nguồn/stock |
+
+```bash
+npm run ai:auto -- --claude              # dò trend + viết 1 bài draft bằng Claude Code
+npm run ai:post -- "Chủ đề" --claude     # viết bài từ chủ đề tự chọn
+npm run ai:trends -- --claude            # chỉ dò + xếp hạng đề tài
+```
+
+- `CLAUDE_MODEL` (env) hoặc `--claude-model` để override model (vd `opus`, `sonnet`); mặc định dùng model của phiên Claude Code.
+- Engine `claude` chỉ chạy **local** (dùng đăng nhập của bạn). GitHub Actions vẫn chạy engine `gemini` — muốn chạy claude trên CI cần thêm `CLAUDE_CODE_OAUTH_TOKEN`, chưa cấu hình sẵn.
+
 ## Biến môi trường (`.env`, xem `.env.example`)
 
 - `GEMINI_API_KEY` — **bắt buộc** cho pipeline sinh bài.
