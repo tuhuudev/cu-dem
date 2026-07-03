@@ -43,6 +43,29 @@ xếp hạng và không.
 
 SEO cần 3-6 tháng tích luỹ — kiên trì đăng đều quan trọng hơn đăng nhiều.
 
+## Kênh video & audio (tái dùng pipeline `D:\youtube-tiktok-research`)
+
+Dây chuyền video của dự án Mystery Box được dùng chung cho Soi Tool (chi tiết trong
+CLAUDE.md của dự án đó). **Không đăng lên kênh Mystery Box** — cần kênh YouTube/Page FB
+riêng mang thương hiệu Soi Tool.
+
+**Lệnh trọn gói:** gõ `/money-pack` trong Claude Code → sinh 4 asset từ 1 đề tài trong
+hàng đợi: bài viết draft + audio bản đọc + video short (lint 7/7) + caption đăng bài.
+
+```bash
+# Từng phần thủ công:
+cd ../youtube-tiktok-research && python src/blog_audio.py --all --blog ../ai-tool-review
+$env:BRAND_NAME="SOI TOOL"; python src/auto_video.py scripts/short-<slug>.json
+```
+
+- **Podcast**: bài có audio tự vào feed `/podcast.xml` — submit 1 lần lên Spotify
+  (podcasters.spotify.com) là mỗi bài mới thành 1 tập podcast, thêm kênh phân phối miễn phí.
+- ⚠️ **Link trong mô tả/comment YouTube Shorts KHÔNG bấm được** (YouTube chặn chống spam).
+  Phễu đúng: video nói "link trong bio" → **bio kênh chứa tối đa 14 link bấm được**
+  (đặt: trang chủ, /top-cong-cu, các bài money chủ lực). FB Reels/feed post thì link
+  trong caption hoạt động bình thường.
+- Video demo tool đồng thời là bằng chứng trải nghiệm thực (E-E-A-T) — nhúng lại vào bài viết.
+
 ## Lệnh đầy đủ
 
 | Lệnh | Việc |

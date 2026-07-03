@@ -343,6 +343,7 @@ Tra ve DUY NHAT JSON hop le, khong markdown fence, theo schema:
   "rating": 4.2,
   "ratingTool": "Ten cong cu duoc cham diem",
   "ratingSummary": "1 cau nhan xet tong (vi sao diem do)",
+  "ctaFor": ["2-3 gach dau dong NGAN: doi tuong nao dang dung tool nay (vd 'Agency quan ly nhieu client')"],
   "imagePrompt": "Prompt tieng Anh de tao anh cover 16:9, khong chu, khong logo, khong watermark",
   "imageQuery": "2-4 tu khoa tieng Anh DON GIAN de tim anh stock (vd: laptop workspace, ai chatbot)",
   "videoQuery": "2-5 tu khoa tieng Viet GON, SAT chu de de tim video YouTube minh hoa (vd: review notion cho nguoi moi)",${sourcesField}
@@ -351,6 +352,7 @@ Tra ve DUY NHAT JSON hop le, khong markdown fence, theo schema:
 Luu y:${sourcesNote}
 - "faq" gom 3-5 cau hoi nguoi dung that su tim kiem (vd gia, mien phi khong, hop voi ai), tra loi NGAN va dua tren du lieu that.
 - "rating"/"ratingTool"/"ratingSummary": CHI dien khi bai review DUY NHAT 1 cong cu (cham diem cong cu do, 0-5, mot chu so thap phan). Neu bai SO SANH nhieu cong cu -> de rating = null va bo ratingTool/ratingSummary.
+- "ctaFor": 2-3 doi tuong HOP NHAT voi tool chinh cua bai (hien trong hop khuyen nghi cuoi bai). De [] neu bai khong co tool chinh.
 `.trim();
 }
 
@@ -560,7 +562,14 @@ function frontmatter(post, opts, ogImage) {
   }
   if (ogImage) lines.push(`ogImage: ${yamlString(ogImage)}`);
   // Bai money: hop CTA verdict cuoi bai (slug tool trong affiliate-map.json).
-  if (opts.ctaTool) lines.push(`ctaTool: ${yamlString(opts.ctaTool)}`);
+  if (opts.ctaTool) {
+    lines.push(`ctaTool: ${yamlString(opts.ctaTool)}`);
+    const ctaFor = Array.isArray(post.ctaFor) ? post.ctaFor.filter(Boolean) : [];
+    if (ctaFor.length) {
+      lines.push("ctaFor:");
+      for (const c of ctaFor.slice(0, 3)) lines.push(`  - ${yamlString(c)}`);
+    }
+  }
   if (opts.draft) lines.push("draft: true");
   lines.push("---", "", String(post.body || "").trim(), "");
   return lines.join("\n");
