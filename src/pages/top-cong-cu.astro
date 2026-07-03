@@ -6,7 +6,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import affiliateMap from "../../scripts/data/affiliate-map.json";
 import { slugify } from "../utils";
-import { SITE_NAME } from "../consts";
+import { SITE_NAME, SITE_URL } from "../consts";
 
 const posts = await getCollection("posts", ({ data }) => !data.draft);
 
@@ -22,7 +22,35 @@ function reviewFor(tool: (typeof tools)[number]) {
   });
 }
 
-const rows = tools.map((tool) => ({ tool, review: reviewFor(tool) }));
+// Tool đã soi kỹ (có review) và có chương trình affiliate đang chạy lên đầu bảng —
+// người đọc thấy lựa chọn đáng tin nhất trước, và click rơi vào tool kiếm được hoa hồng.
+const statusRank: Record<string, number> = { active: 0, pending: 1, closed: 2, none: 3 };
+const rows = tools
+  .map((tool) => ({ tool, review: reviewFor(tool) }))
+  .sort((a, b) => {
+    const byReview = Number(!a.review) - Number(!b.review);
+    if (byReview !== 0) return byReview;
+    const byStatus = (statusRank[a.tool.status] ?? 9) - (statusRank[b.tool.status] ?? 9);
+    if (byStatus !== 0) return byStatus;
+    return a.tool.name.localeCompare(b.tool.name);
+  });
+
+// ItemList JSON-LD: giúp Google hiểu đây là trang danh sách xếp hạng công cụ.
+const itemListJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: `Top công cụ AI & SaaS đáng tiền — ${SITE_NAME}`,
+  itemListOrder: "https://schema.org/ItemListOrderDescending",
+  numberOfItems: rows.length,
+  itemListElement: rows.map(({ tool, review }, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: tool.name,
+    ...(review
+      ? { url: new URL(`/bai-viet/${slugify(review.data.title)}`, SITE_URL).href }
+      : { url: tool.website || tool.url }),
+  })),
+});
 ---
 
 <BaseLayout
@@ -45,6 +73,7 @@ const rows = tools.map((tool) => ({ tool, review: reviewFor(tool) }));
       <thead>
         <tr>
           <th>Công cụ</th>
+          <th>Điểm</th>
           <th>Bài review</th>
           <th></th>
         </tr>
@@ -54,6 +83,13 @@ const rows = tools.map((tool) => ({ tool, review: reviewFor(tool) }));
           rows.map(({ tool, review }) => (
             <tr>
               <td class="tool-name">{tool.name}</td>
+              <td class="tool-score">
+                {typeof review?.data.rating === "number" ? (
+                  <span class="score">★ {review.data.rating.toFixed(1)}</span>
+                ) : (
+                  <span class="muted">—</span>
+                )}
+              </td>
               <td>
                 {review ? (
                   <a href={`/bai-viet/${slugify(review.data.title)}`}>{review.data.title}</a>
@@ -72,6 +108,8 @@ const rows = tools.map((tool) => ({ tool, review: reviewFor(tool) }));
       </tbody>
     </table>
   </div>
+
+  <script type="application/ld+json" set:html={itemListJson} is:inline />
 </BaseLayout>
 
 <style>
@@ -85,6 +123,7 @@ const rows = tools.map((tool) => ({ tool, review: reviewFor(tool) }));
   }
   .tool-table th { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
   .tool-name { font-weight: 700; white-space: nowrap; }
+  .tool-score .score { font-weight: 800; color: var(--primary); white-space: nowrap; }
   .muted { color: var(--muted); }
   .try-btn {
     display: inline-block;

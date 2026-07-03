@@ -37,6 +37,19 @@ const postCount = allPosts.length;
 const lastUpdated = allPosts.length
   ? new Date(Math.max(...allPosts.map((p) => (p.data.updatedDate ?? p.data.pubDate).valueOf())))
   : null;
+
+// Khối "Đáng dùng nhất": bài money (có ctaTool) điểm cao — đưa người đọc mới vào phễu review
+// thay vì chỉ thấy bài mới nhất. Bỏ bài đã ở vị trí nổi bật để không lặp.
+const moneyPosts = isFirstPage
+  ? allPosts
+      .filter((p) => p.data.ctaTool && p.id !== featured?.id)
+      .sort(
+        (a, b) =>
+          (b.data.rating ?? 0) - (a.data.rating ?? 0) ||
+          b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+      )
+      .slice(0, 3)
+  : [];
 ---
 
 <BaseLayout title={pageTitle} description={SITE_DESCRIPTION} type="website">
@@ -75,6 +88,29 @@ const lastUpdated = allPosts.length
         ogImage={featured.data.ogImage}
         readingTime={readingTime(featured.body ?? "")}
       />
+    )
+  }
+
+  {
+    moneyPosts.length > 0 && (
+      <>
+        <div class="money-head">
+          <h2 class="section-title">Đáng dùng nhất</h2>
+          <a class="money-more" href="/top-cong-cu">Xem bảng xếp hạng công cụ →</a>
+        </div>
+        <ul class="post-grid">
+          {moneyPosts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              category={post.data.category}
+              ogImage={post.data.ogImage}
+              readingTime={readingTime(post.body ?? "")}
+            />
+          ))}
+        </ul>
+      </>
     )
   }
 

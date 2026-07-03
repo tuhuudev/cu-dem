@@ -1,0 +1,93 @@
+---
+// Thanh CTA dính đáy màn hình cho bài money: hiện khi người đọc cuộn qua ~45% bài
+// (người bỏ ngang giữa bài vẫn thấy nút), tắt được và nhớ trong phiên (sessionStorage).
+interface Props {
+  href: string;
+  label: string;
+  name: string;
+}
+const { href, label, name } = Astro.props;
+---
+
+<aside class="sticky-cta" id="sticky-cta" hidden aria-label={`Dùng thử ${name}`}>
+  <span class="sticky-cta-name">{name}</span>
+  <a class="sticky-cta-btn" href={href} rel="sponsored nofollow" target="_blank">{label} →</a>
+  <button class="sticky-cta-close" type="button" aria-label="Đóng">✕</button>
+</aside>
+
+<script is:inline>
+  (() => {
+    const bar = document.getElementById("sticky-cta");
+    if (!bar || sessionStorage.getItem("stickyCtaClosed")) return;
+    let shown = false;
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      if (max <= 0) return;
+      const past = scrollY / max >= 0.45;
+      if (past && !shown) {
+        bar.hidden = false;
+        shown = true;
+      } else if (!past && shown) {
+        bar.hidden = true;
+        shown = false;
+      }
+    };
+    addEventListener("scroll", onScroll, { passive: true });
+    bar.querySelector(".sticky-cta-close").addEventListener("click", () => {
+      bar.hidden = true;
+      sessionStorage.setItem("stickyCtaClosed", "1");
+      removeEventListener("scroll", onScroll);
+    });
+  })();
+</script>
+
+<style>
+  .sticky-cta {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: calc(100vw - 24px);
+    padding: 10px 12px 10px 18px;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary, #2563eb) 0%, var(--primary-700, #1e3a8a) 100%);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  }
+  .sticky-cta-name {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sticky-cta-btn {
+    background: #fff;
+    color: var(--primary-700, #1e3a8a);
+    font-weight: 800;
+    font-size: 0.92rem;
+    padding: 8px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .sticky-cta-btn:hover { opacity: 0.92; text-decoration: none; }
+  .sticky-cta-close {
+    background: none;
+    border: 0;
+    color: #fff;
+    opacity: 0.7;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .sticky-cta-close:hover { opacity: 1; }
+  @media (max-width: 480px) {
+    .sticky-cta { width: calc(100vw - 24px); justify-content: space-between; }
+    .sticky-cta-name { display: none; }
+    .sticky-cta-btn { flex: 1; text-align: center; }
+  }
+</style>

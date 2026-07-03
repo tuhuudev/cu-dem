@@ -622,7 +622,12 @@ export async function generatePostBundle(opts, apiKey) {
   if (opts.affiliate !== false) {
     try {
       const map = await loadAffiliateMap();
-      const { body, inserted } = insertAffiliateLinks(post.body, map);
+      // Bai money (co ctaTool): cho phep tool chinh xuat hien 2 lan + tong link cao hon.
+      const { body, inserted } = insertAffiliateLinks(
+        post.body,
+        map,
+        opts.ctaTool ? { primarySlug: opts.ctaTool, maxTotal: 5 } : {}
+      );
       post.body = body;
       if (inserted.length) {
         console.log(`[ai] Affiliate: chen ${inserted.length} link (${inserted.map((x) => x.keyword).join(", ")}).`);

@@ -353,6 +353,19 @@ main {
   font-size: 1.4rem;
   margin: 8px 0 18px;
 }
+/* Khối "Đáng dùng nhất" trang chủ: tiêu đề + link sang bảng xếp hạng /top-cong-cu */
+.money-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.money-head .money-more {
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
 .post-grid {
   list-style: none;
   padding: 0;
@@ -976,6 +989,52 @@ a.badge:hover {
   color: var(--primary);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
+}
+
+/* ---------- Ưu điểm / Nhược điểm ----------
+   Bắt theo id heading do slug sinh ("## Ưu điểm..." -> id="ưu-điểm...").
+   Danh sách ngay sau heading thành hộp màu với dấu ✓/✗ — đọc lướt vẫn nắm được verdict. */
+.prose h2[id^="ưu-điểm"] + ul,
+.prose h3[id^="ưu-điểm"] + ul,
+.prose h2[id^="nhược-điểm"] + ul,
+.prose h3[id^="nhược-điểm"] + ul {
+  list-style: none;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.prose h2[id^="ưu-điểm"] + ul,
+.prose h3[id^="ưu-điểm"] + ul {
+  background: color-mix(in srgb, #22c55e 8%, transparent);
+  border-color: color-mix(in srgb, #22c55e 35%, var(--border));
+}
+.prose h2[id^="nhược-điểm"] + ul,
+.prose h3[id^="nhược-điểm"] + ul {
+  background: color-mix(in srgb, #ef4444 7%, transparent);
+  border-color: color-mix(in srgb, #ef4444 30%, var(--border));
+}
+.prose h2[id^="ưu-điểm"] + ul > li,
+.prose h3[id^="ưu-điểm"] + ul > li,
+.prose h2[id^="nhược-điểm"] + ul > li,
+.prose h3[id^="nhược-điểm"] + ul > li {
+  padding-left: 1.7em;
+  position: relative;
+}
+.prose h2[id^="ưu-điểm"] + ul > li::before,
+.prose h3[id^="ưu-điểm"] + ul > li::before {
+  content: "✓";
+  position: absolute;
+  left: 0.2em;
+  font-weight: 800;
+  color: #16a34a;
+}
+.prose h2[id^="nhược-điểm"] + ul > li::before,
+.prose h3[id^="nhược-điểm"] + ul > li::before {
+  content: "✗";
+  position: absolute;
+  left: 0.2em;
+  font-weight: 800;
+  color: #dc2626;
 }
 
 /* ---------- Newsletter ---------- */

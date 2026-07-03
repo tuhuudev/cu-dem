@@ -9,6 +9,8 @@ import Comments from "../../components/Comments.astro";
 import Newsletter from "../../components/Newsletter.astro";
 import Rating from "../../components/Rating.astro";
 import ToolCTA from "../../components/ToolCTA.astro";
+import StickyCTA from "../../components/StickyCTA.astro";
+import affiliateMap from "../../../scripts/data/affiliate-map.json";
 import {
   formatDate,
   isoDate,
@@ -88,10 +90,27 @@ const hasAffiliate = /rel="[^"]*sponsored/i.test(post.body ?? "");
 const showDisclosure = data.affiliateDisclosure !== false && hasAffiliate;
 
 // CTA cuối bài: lấy link affiliate ĐẦU TIÊN trong bài làm "khuyến nghị" (tự động, không cần cấu hình thêm).
+// Anchor text có thể chứa thẻ lồng (vd <strong>) -> match lười rồi bỏ thẻ.
 const ctaMatch = (post.body ?? "").match(
-  /<a href="([^"]+)"[^>]*rel="[^"]*sponsored[^"]*"[^>]*>([^<]+)<\/a>/i
+  /<a href="([^"]+)"[^>]*rel="[^"]*sponsored[^"]*"[^>]*>(.*?)<\/a>/i
 );
-const cta = ctaMatch ? { url: ctaMatch[1], label: ctaMatch[2].trim() } : null;
+const cta = ctaMatch
+  ? { url: ctaMatch[1], label: ctaMatch[2].replace(/<[^>]+>/g, "").trim() }
+  : null;
+
+// Thanh CTA dính đáy: ưu tiên tool trong frontmatter ctaTool, fallback link đầu tiên trong bài.
+const ctaToolEntry = data.ctaTool
+  ? affiliateMap.links.find((l) => l.slug === data.ctaTool && (l.url || l.website))
+  : undefined;
+const stickyCta = ctaToolEntry
+  ? {
+      href: `/go/${ctaToolEntry.slug}`,
+      label: ctaToolEntry.label || `Dùng thử ${ctaToolEntry.name}`,
+      name: ctaToolEntry.name,
+    }
+  : cta
+    ? { href: cta.url, label: `Dùng thử ${cta.label}`, name: cta.label }
+    : null;
 ---
 
 <BaseLayout
@@ -253,6 +272,8 @@ const cta = ctaMatch ? { url: ctaMatch[1], label: ctaMatch[2].trim() } : null;
     <RelatedPosts posts={related} />
     <Comments />
   </article>
+
+  {stickyCta && <StickyCTA href={stickyCta.href} label={stickyCta.label} name={stickyCta.name} />}
 </BaseLayout>
 
 <style>

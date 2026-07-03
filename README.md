@@ -35,6 +35,12 @@ npm run deploy                 # build + đưa lên web
 npm run index:ping             # báo Google/Bing index
 ```
 
+**Trước khi xóa `draft: true` (quan trọng cho SEO 2026):** Google core update 2026 đánh tụt
+hạng mạnh review AI không có dấu hiệu dùng thật (71% site affiliate mất hạng). Mỗi bài money
+nên thêm ít nhất 1-2 **ảnh chụp màn hình tự chụp** khi dùng thử tool (trial miễn phí là đủ)
+kèm 1-2 câu nhận xét từ chính trải nghiệm đó — 15 phút/bài nhưng là khác biệt giữa được
+xếp hạng và không.
+
 SEO cần 3-6 tháng tích luỹ — kiên trì đăng đều quan trọng hơn đăng nhiều.
 
 ## Lệnh đầy đủ
