@@ -17,7 +17,9 @@
       "tags": "ElevenLabs, text-to-speech, AI voice, review",
       "ctaTool": "elevenlabs",
       "context": "Bai review 1 tool, cham diem. Test goc Viet: chat luong giong tieng Viet, gia tung goi, so voi FPT.AI Voice va Zalo AI. Doi tuong: nguoi lam YouTube/TikTok/podcast Viet.",
-      "status": "todo"
+      "status": "done",
+      "doneFile": "src/content/posts/elevenlabs-review-2026-giong-doc-ai-tieng-viet-co-tu-nhien-khong.md",
+      "doneDate": "2026-07-03"
     },
     {
       "topic": "ElevenLabs vs FPT.AI Voice: chọn giọng đọc AI nào cho video tiếng Việt?",
