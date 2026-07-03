@@ -1,0 +1,135 @@
+{
+  "_huong_dan": "Hang doi bai MONEY (bottom-funnel, nham tool co chuong trinh affiliate mo). Chay 'npm run ai:money' -> lay bai 'todo' dau tien, sinh bai draft, danh dau 'done'. Them de bai moi vao cuoi mang. ctaTool = slug trong affiliate-map.json (hien hop CTA cuoi bai).",
+  "queue": [
+    {
+      "topic": "Jasper AI 2026: review chi tiết — 49 USD/tháng có đáng tiền cho team content Việt?",
+      "category": "Công cụ AI",
+      "tags": "Jasper, AI viết content, review",
+      "ctaTool": "jasper",
+      "context": "Bai review 1 tool, cham diem rating. Nhan manh: dung cho ai (agency, team content), khi nao KHONG dang tien (ca nhan viet it), so nhanh voi ChatGPT Plus ve gia/chat luong content marketing.",
+      "status": "done",
+      "doneFile": "src/content/posts/jasper-ai-2026-co-dang-4969-usdthang-cho-team-content-viet.md",
+      "doneDate": "2026-07-02"
+    },
+    {
+      "topic": "ElevenLabs review 2026: tạo giọng đọc AI tiếng Việt có tự nhiên không?",
+      "category": "Công cụ AI",
+      "tags": "ElevenLabs, text-to-speech, AI voice, review",
+      "ctaTool": "elevenlabs",
+      "context": "Bai review 1 tool, cham diem. Test goc Viet: chat luong giong tieng Viet, gia tung goi, so voi FPT.AI Voice va Zalo AI. Doi tuong: nguoi lam YouTube/TikTok/podcast Viet.",
+      "status": "todo"
+    },
+    {
+      "topic": "ElevenLabs vs FPT.AI Voice: chọn giọng đọc AI nào cho video tiếng Việt?",
+      "category": "Công cụ AI",
+      "tags": "ElevenLabs, FPT.AI, text-to-speech, so sánh",
+      "ctaTool": "elevenlabs",
+      "context": "Bai so sanh. Tieu chi: do tu nhien tieng Viet, gia theo phut/ky tu, API, ban quyen thuong mai. Ket luan ro theo use case.",
+      "status": "todo"
+    },
+    {
+      "topic": "Semrush cho SEO tiếng Việt 2026: có đáng 140 USD/tháng hay dùng công cụ miễn phí?",
+      "category": "Marketing",
+      "tags": "Semrush, SEO, review",
+      "ctaTool": "semrush",
+      "context": "Bai review 1 tool, cham diem. Goc Viet: du lieu keyword tieng Viet co du tot khong, ai nen mua (agency, web ban hang), thay the mien phi (Search Console, Keyword Planner) du dung cho ai.",
+      "status": "todo"
+    },
+    {
+      "topic": "Make vs Zapier 2026: doanh nghiệp nhỏ Việt nên chọn nền tảng tự động hóa nào?",
+      "category": "SaaS",
+      "tags": "Make, Zapier, tự động hóa, so sánh",
+      "ctaTool": "make",
+      "context": "Bai so sanh 2 tool. Tieu chi: gia theo so task/operation, do kho hoc, ket noi voi cong cu pho bien o VN (Google Sheets, Telegram, Zalo OA qua webhook). Make thuong re hon cho SMB.",
+      "status": "todo"
+    },
+    {
+      "topic": "Surfer SEO review 2026: viết bài chuẩn SEO tiếng Việt có hiệu quả?",
+      "category": "Marketing",
+      "tags": "Surfer SEO, SEO, content, review",
+      "ctaTool": "surfer-seo",
+      "context": "Bai review 1 tool, cham diem. Content Editor cho tieng Viet hoat dong the nao, gia cac goi, ket hop voi AI viet bai. Ai nen dung: nguoi viet blog kiem tien, agency content.",
+      "status": "todo"
+    },
+    {
+      "topic": "GetResponse 2026: email marketing cho shop online Việt — review và bảng giá",
+      "category": "Marketing",
+      "tags": "GetResponse, email marketing, review",
+      "ctaTool": "getresponse",
+      "context": "Bai review 1 tool, cham diem. So nhanh voi Mailchimp ve gia (GetResponse re hon), tinh nang automation, landing page. Doi tuong: shop online, nguoi ban khoa hoc.",
+      "status": "todo"
+    },
+    {
+      "topic": "Writesonic vs Jasper: công cụ AI viết content nào đáng tiền hơn cho người Việt?",
+      "category": "Công cụ AI",
+      "tags": "Writesonic, Jasper, AI viết content, so sánh",
+      "ctaTool": "writesonic",
+      "context": "Bai so sanh. Writesonic re hon nhieu — goc khai thac: chat luong tieng Viet, gia per word, ai nen chon ben nao theo ngan sach.",
+      "status": "todo"
+    },
+    {
+      "topic": "Grammarly 2026 có đáng nâng Premium? Review cho người Việt viết tiếng Anh",
+      "category": "Năng suất",
+      "tags": "Grammarly, viết tiếng Anh, review",
+      "ctaTool": "grammarly",
+      "context": "Bai review 1 tool, cham diem. Doi tuong: dev viet docs/email tieng Anh, freelancer lam voi khach nuoc ngoai, du hoc sinh. Free vs Premium khac gi, co dang $12/thang.",
+      "status": "todo"
+    },
+    {
+      "topic": "Pictory review 2026: biến bài viết thành video YouTube tự động có ổn không?",
+      "category": "Công cụ AI",
+      "tags": "Pictory, AI video, review",
+      "ctaTool": "pictory",
+      "context": "Bai review 1 tool, cham diem. Doi tuong: nguoi lam content da kenh, tan dung blog co san thanh video. Chat luong voice/sub tieng Viet, gia goi.",
+      "status": "todo"
+    },
+    {
+      "topic": "5 công cụ AI viết content có hoa hồng affiliate tốt nhất 2026 (cho người làm MMO)",
+      "category": "Marketing",
+      "tags": "affiliate, AI viết content, MMO, top",
+      "ctaTool": "jasper",
+      "context": "Bai top-list cho nguoi lam affiliate/MMO Viet: Jasper, Writesonic, Surfer, GetResponse, Pictory — moi tool: hoa hong bao nhieu, cookie bao lau, de duoc duyet khong. Goc meta nhung rat bottom-funnel.",
+      "status": "todo"
+    },
+    {
+      "topic": "Zapier 2026: tự động hóa công việc văn phòng — review và 5 workflow mẫu cho SMB Việt",
+      "category": "SaaS",
+      "tags": "Zapier, tự động hóa, năng suất, review",
+      "ctaTool": "zapier",
+      "context": "Bai review 1 tool, cham diem. 5 vi du workflow cu the (don hang Shopee -> Sheets, form -> email...), gia free/paid, khi nao nen dung Make thay the.",
+      "status": "todo"
+    },
+    {
+      "topic": "Jasper vs ChatGPT Plus cho content marketing: 49 USD hay 20 USD?",
+      "category": "Công cụ AI",
+      "tags": "Jasper, ChatGPT, content marketing, so sánh",
+      "ctaTool": "jasper",
+      "context": "Bai so sanh truc dien — keyword nhieu nguoi tim. Trung thuc: ChatGPT du cho ca nhan; Jasper dang tien khi can brand voice, template, team. Ket luan theo doi tuong.",
+      "status": "todo"
+    },
+    {
+      "topic": "Semrush vs Ahrefs 2026: chọn công cụ SEO nào khi ngân sách chỉ đủ mua một?",
+      "category": "Marketing",
+      "tags": "Semrush, Ahrefs, SEO, so sánh",
+      "ctaTool": "semrush",
+      "context": "Bai so sanh kinh dien, search volume cao. Ahrefs khong co affiliate -> CTA nghieng Semrush khi ket qua ngang nhau, nhung PHAI trung thuc ve diem manh Ahrefs (backlink data).",
+      "status": "todo"
+    },
+    {
+      "topic": "Cách làm video YouTube không lộ mặt bằng ElevenLabs + Pictory (chi phí thật 2026)",
+      "category": "Công cụ AI",
+      "tags": "ElevenLabs, Pictory, YouTube, hướng dẫn",
+      "ctaTool": "elevenlabs",
+      "context": "Bai huong dan how-to co buyer intent: quy trinh tung buoc, tong chi phi/thang, loi thuong gap. 2 tool deu co affiliate.",
+      "status": "todo"
+    },
+    {
+      "topic": "GetResponse vs Mailchimp 2026: email marketing nào rẻ và dễ hơn cho người Việt?",
+      "category": "Marketing",
+      "tags": "GetResponse, Mailchimp, email marketing, so sánh",
+      "ctaTool": "getresponse",
+      "context": "Bai so sanh. Mailchimp dat len nhanh theo danh sach; GetResponse re hon + co affiliate. Trung thuc ve diem manh Mailchimp (template, brand).",
+      "status": "todo"
+    }
+  ]
+}

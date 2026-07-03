@@ -1,0 +1,100 @@
+---
+// Trang hub money: bảng công cụ đáng dùng + link bài review tương ứng + nút /go/.
+// Nguồn dữ liệu: affiliate-map.json (tool) + content collection (bài review nhắc tới tool).
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import affiliateMap from "../../scripts/data/affiliate-map.json";
+import { slugify } from "../utils";
+import { SITE_NAME } from "../consts";
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+
+// Tool hiện trên bảng: có đích đến (/go/ hoạt động), trừ status "none" không có gì để "đăng ký".
+const tools = affiliateMap.links.filter((l) => l.slug && (l.url || l.website));
+
+// Tìm bài review liên quan nhất cho mỗi tool (tiêu đề/tags chứa tên tool).
+function reviewFor(tool: (typeof tools)[number]) {
+  const names = [tool.name, ...(tool.keywords || [])].map((s) => s.toLowerCase());
+  return posts.find((p) => {
+    const hay = (p.data.title + " " + p.data.tags.join(" ")).toLowerCase();
+    return names.some((n) => hay.includes(n.toLowerCase()));
+  });
+}
+
+const rows = tools.map((tool) => ({ tool, review: reviewFor(tool) }));
+---
+
+<BaseLayout
+  title={`Top công cụ AI & SaaS đáng tiền — ${SITE_NAME}`}
+  description={`Danh sách công cụ AI & SaaS ${SITE_NAME} đã soi kỹ: đánh giá, bài review chi tiết và link dùng thử — cập nhật liên tục.`}
+  type="website"
+>
+  <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: "Top công cụ" }]} />
+
+  <section class="page-intro">
+    <h1>Top công cụ AI &amp; SaaS đáng tiền</h1>
+    <p>
+      Những công cụ {SITE_NAME} đã soi kỹ hoặc đang theo dõi. Bấm tên bài để đọc review chi tiết
+      trước khi quyết định. Một số link là link tiếp thị liên kết — bạn không tốn thêm chi phí.
+    </p>
+  </section>
+
+  <div class="tool-table-wrap">
+    <table class="tool-table">
+      <thead>
+        <tr>
+          <th>Công cụ</th>
+          <th>Bài review</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map(({ tool, review }) => (
+            <tr>
+              <td class="tool-name">{tool.name}</td>
+              <td>
+                {review ? (
+                  <a href={`/bai-viet/${slugify(review.data.title)}`}>{review.data.title}</a>
+                ) : (
+                  <span class="muted">Đang viết…</span>
+                )}
+              </td>
+              <td>
+                <a class="try-btn" href={`/go/${tool.slug}`} rel="sponsored nofollow" target="_blank">
+                  Dùng thử
+                </a>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</BaseLayout>
+
+<style>
+  .tool-table-wrap { overflow-x: auto; margin: 24px 0 48px; }
+  .tool-table { width: 100%; border-collapse: collapse; }
+  .tool-table th, .tool-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+  }
+  .tool-table th { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .tool-name { font-weight: 700; white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .try-btn {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 7px 16px;
+    border-radius: 9px;
+    white-space: nowrap;
+  }
+  .try-btn:hover { opacity: 0.9; text-decoration: none; }
+</style>

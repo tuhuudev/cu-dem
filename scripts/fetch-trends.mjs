@@ -140,7 +140,7 @@ function buildRankPrompt(rawItems, count, existingTitles = []) {
         .join("\n")}\n`
     : "";
   return (avoid + `
-Ban la tong bien tap cua Cu Dem (trang tieng Viet danh gia & so sanh cong cu AI / SaaS cho dev va doanh nghiep nho).
+Ban la tong bien tap cua Soi Tool (trang tieng Viet danh gia & so sanh cong cu AI / SaaS cho dev va doanh nghiep nho).
 Trang viet ve: cong cu AI, phan mem SaaS, tu dong hoa, nang suat, lap trinh, marketing — duoi dang review, so sanh, huong dan chon.
 
 Duoi day la cac tieu de dang nong lay tu nhieu nguon tin:

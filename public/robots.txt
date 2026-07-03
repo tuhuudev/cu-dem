@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Trang redirect affiliate — không cho index
+Disallow: /go/
 
-Sitemap: https://cu-dem.pages.dev/sitemap-index.xml
+Sitemap: https://soitool.pages.dev/sitemap-index.xml

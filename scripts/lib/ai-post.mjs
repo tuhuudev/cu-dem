@@ -308,7 +308,7 @@ CACH LAM VIEC (BAT BUOC, theo thu tu):
       : "";
 
   return `
-Ban la bien tap vien chuyen danh gia & so sanh cong cu AI / SaaS cho Cu Dem (trang tieng Viet cho dev va doanh nghiep nho).
+Ban la bien tap vien chuyen danh gia & so sanh cong cu AI / SaaS cho Soi Tool (trang tieng Viet cho dev va doanh nghiep nho).
 
 Hay viet mot bai danh gia/so sanh hoan chinh, dang tin cay (chuan E-E-A-T) ve chu de: "${opts.topic}".
 ${contextBlock}${claudeResearchBlock}${researchBlock}
@@ -321,6 +321,8 @@ Yeu cau noi dung:
   2. Mot BANG SO SANH dang Markdown (cot: Tieu chi | cac cong cu) neu chu de la so sanh; neu la review 1 cong cu thi bang Thong so / Goi gia.
   3. "Uu diem" va "Nhuoc diem" dang danh sach gach dau dong (trung thuc, co ca nhuoc diem that).
   4. Goi y lua chon theo nhu cau / ngan sach.
+  5. Neu bai review/so sanh cong cu tra phi: muc "## Gia va cach dang ky" — bang gia cac goi
+     (so tien cu the neu tra cuu duoc), goi nao hop tung doi tuong, co ban mien phi/trial khong.
 - CAM van AI sao rong: khong dung cac cum sao rong nhu "trong thoi dai so", "khong the phu nhan rang", "noi tom lai la"; khong hua hen qua loi; moi cau phai co thong tin that.
 ${factRule}
 - Markdown body chi dung H2/H3, danh sach, bang. Khong lap lai title trong H1. Khong chen hinh anh (tru link nguon).
@@ -557,6 +559,8 @@ function frontmatter(post, opts, ogImage) {
     if (post.ratingSummary) lines.push(`ratingSummary: ${yamlString(post.ratingSummary)}`);
   }
   if (ogImage) lines.push(`ogImage: ${yamlString(ogImage)}`);
+  // Bai money: hop CTA verdict cuoi bai (slug tool trong affiliate-map.json).
+  if (opts.ctaTool) lines.push(`ctaTool: ${yamlString(opts.ctaTool)}`);
   if (opts.draft) lines.push("draft: true");
   lines.push("---", "", String(post.body || "").trim(), "");
   return lines.join("\n");

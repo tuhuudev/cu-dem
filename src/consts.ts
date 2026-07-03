@@ -3,20 +3,20 @@
 // =============================================================
 
 /** Tên miền chính thức (KHÔNG có dấu / ở cuối). Dùng cho canonical, OG, sitemap. */
-export const SITE_URL = "https://cu-dem.pages.dev";
+export const SITE_URL = "https://soitool.pages.dev";
 
 /** Tên thương hiệu / tên trang — hiển thị ở header và og:site_name */
-export const SITE_NAME = "Cú Đêm";
+export const SITE_NAME = "Soi Tool";
 
 /** Mô tả mặc định của trang (dùng khi bài viết không có description) */
 export const SITE_DESCRIPTION =
-  "Cú Đêm soi kỹ và so sánh công cụ AI & SaaS cho developer và doanh nghiệp nhỏ — review thẳng thắn, dựa trên dữ liệu thực tế, để bạn chọn đúng công cụ đáng tiền.";
+  "Soi Tool soi kỹ và so sánh công cụ AI & SaaS cho developer và doanh nghiệp nhỏ — review thẳng thắn, dựa trên dữ liệu thực tế, để bạn chọn đúng công cụ đáng tiền.";
 
 /** Ngôn ngữ trang */
 export const SITE_LANG = "vi";
 
 /** Tác giả mặc định (dùng cho JSON-LD) */
-export const DEFAULT_AUTHOR = "Cú Đêm";
+export const DEFAULT_AUTHOR = "Soi Tool";
 
 /** Link Fanpage Facebook (dùng cho nút "Theo dõi" và footer). Đổi thành trang của bạn. */
 export const FACEBOOK_URL = "";
@@ -39,6 +39,11 @@ export const SITE_LOGO = "/logo.png";
  *  GA4: điền Measurement ID (vd "G-XXXXXXX"). Có thể bật cả hai. */
 export const PLAUSIBLE_DOMAIN = "";
 export const GA4_ID = "";
+
+/** Cloudflare Web Analytics (miễn phí, nhẹ). Lấy token: dash.cloudflare.com → Web Analytics
+ *  → Add site → copy "token" trong snippet. Để trống = tắt.
+ *  QUAN TRỌNG cho affiliate: mỗi click link /go/<tool> = 1 pageview -> đếm được click theo tool. */
+export const CF_ANALYTICS_TOKEN = "";
 
 /** Bình luận giscus (GitHub Discussions). Để trống repo = tắt.
  *  Lấy thông số tại https://giscus.app (repo phải bật Discussions + cài app giscus). */

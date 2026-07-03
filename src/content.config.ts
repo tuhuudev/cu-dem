@@ -28,6 +28,11 @@ const posts = defineCollection({
     rating: z.number().min(0).max(5).optional(),
     ratingTool: z.string().optional(), // tên công cụ được chấm điểm (itemReviewed)
     ratingSummary: z.string().optional(), // 1 câu nhận xét tổng (hiện cạnh sao)
+    // Slug tool trong scripts/data/affiliate-map.json -> hiện hộp CTA "verdict" cuối bài
+    // với nút /go/<slug>. Dùng cho bài money (review/so sánh có tool thắng cuộc).
+    ctaTool: z.string().optional(),
+    // 2-3 gạch đầu dòng "hợp với ai" hiện trong hộp CTA.
+    ctaFor: z.array(z.string()).default([]),
   }),
 });
 

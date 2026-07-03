@@ -1,5 +1,5 @@
 {
-  "name": "cu-dem",
+  "name": "soitool",
   "type": "module",
   "version": "1.0.0",
   "private": true,
@@ -9,11 +9,12 @@
     "ai:post": "node scripts/generate-ai-post.mjs",
     "ai:trends": "node scripts/fetch-trends.mjs",
     "ai:auto": "node scripts/auto-trend-post.mjs",
+    "ai:money": "node scripts/money-post.mjs",
     "media:up": "node scripts/upload-media.mjs",
     "og": "node scripts/generate-og.mjs",
     "check": "astro check",
     "build": "node scripts/generate-og.mjs && astro build && pagefind --site dist",
-    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=cu-dem",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=soitool",
     "index:ping": "node scripts/indexnow.mjs",
     "preview": "astro preview",
     "astro": "astro"

@@ -21,7 +21,7 @@ function parseArgs(argv) {
     topic: "",
     category: "",
     tags: "",
-    author: "Cú Đêm",
+    author: "Soi Tool",
     draft: false,
     image: true,
     local: false,

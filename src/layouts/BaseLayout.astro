@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import SEO from "../components/SEO.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
-import { SITE_NAME, SITE_LANG, FACEBOOK_URL, PLAUSIBLE_DOMAIN, GA4_ID } from "../consts";
+import { SITE_NAME, SITE_LANG, FACEBOOK_URL, PLAUSIBLE_DOMAIN, GA4_ID, CF_ANALYTICS_TOKEN } from "../consts";
 import { categoryUrl } from "../utils";
 import "@fontsource/be-vietnam-pro/400.css";
 import "@fontsource/be-vietnam-pro/600.css";
@@ -56,6 +56,13 @@ const categories = [...new Set(allPosts.map((p) => p.data.category))].sort();
     <link rel="alternate" type="application/rss+xml" title={SITE_NAME} href="/rss.xml" />
 
     {/* Analytics (chỉ nhúng khi đã cấu hình trong consts.ts) */}
+    {CF_ANALYTICS_TOKEN && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${CF_ANALYTICS_TOKEN}"}`}
+      ></script>
+    )}
     {PLAUSIBLE_DOMAIN && (
       <script defer data-domain={PLAUSIBLE_DOMAIN} src="https://plausible.io/js/script.js"></script>
     )}
@@ -93,6 +100,7 @@ const categories = [...new Set(allPosts.map((p) => p.data.category))].sort();
 
         <nav class="nav" aria-label="Chuyên mục">
           <a href="/">Trang chủ</a>
+          <a href="/top-cong-cu">Top công cụ</a>
           {categories.map((cat) => <a href={categoryUrl(cat)}>{cat}</a>)}
         </nav>
 
@@ -132,6 +140,7 @@ const categories = [...new Set(allPosts.map((p) => p.data.category))].sort();
             <h3>Liên kết</h3>
             <ul>
               <li><a href="/">Trang chủ</a></li>
+              <li><a href="/top-cong-cu">Top công cụ</a></li>
               <li><a href="/gioi-thieu">Giới thiệu</a></li>
               <li><a href="/tim-kiem">Tìm kiếm</a></li>
               <li><a href="/rss.xml">RSS</a></li>

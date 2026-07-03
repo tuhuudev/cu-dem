@@ -1,0 +1,42 @@
+---
+// Trang redirect affiliate: /go/<tool> -> link affiliate (hoac trang chu khi chua co link).
+// Vi sao can: (1) doi link trong affiliate-map.json la moi bai cu tu tro dich moi,
+// (2) moi click = 1 pageview /go/<tool> tren Cloudflare Web Analytics -> dem duoc click mien phi.
+// Trang nay noindex + bi chan trong robots.txt (Disallow: /go/).
+import affiliateMap from "../../../scripts/data/affiliate-map.json";
+import { CF_ANALYTICS_TOKEN } from "../../consts";
+
+export function getStaticPaths() {
+  return affiliateMap.links
+    .filter((l) => l.slug && (l.url || l.website))
+    .map((l) => ({
+      params: { slug: l.slug },
+      props: { name: l.name || l.slug, target: l.url || l.website },
+    }));
+}
+
+const { name, target } = Astro.props;
+
+// Beacon dem click TRUOC khi chuyen trang. Render qua set:html de tranh JSX conditional trong <head>.
+const beaconHtml = CF_ANALYTICS_TOKEN
+  ? `<script src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${CF_ANALYTICS_TOKEN}"}'></script>`
+  : "";
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Đang chuyển đến {name}…</title>
+    <Fragment set:html={beaconHtml} />
+    <!-- Cho ~300ms de beacon gui kip roi moi chuyen; meta refresh 1s la fallback khi tat JS -->
+    <meta http-equiv="refresh" content={`1;url=${target}`} />
+    <script is:inline define:vars={{ target }}>
+      setTimeout(() => location.replace(target), 300);
+    </script>
+  </head>
+  <body>
+    <p>Đang chuyển đến {name}… Nếu không tự chuyển, <a href={target} rel="sponsored nofollow">bấm vào đây</a>.</p>
+  </body>
+</html>

@@ -8,6 +8,7 @@ import RelatedPosts from "../../components/RelatedPosts.astro";
 import Comments from "../../components/Comments.astro";
 import Newsletter from "../../components/Newsletter.astro";
 import Rating from "../../components/Rating.astro";
+import ToolCTA from "../../components/ToolCTA.astro";
 import {
   formatDate,
   isoDate,
@@ -218,8 +219,10 @@ const cta = ctaMatch ? { url: ctaMatch[1], label: ctaMatch[2].trim() } : null;
           )
         }
 
+        {data.ctaTool && <ToolCTA slug={data.ctaTool} rating={data.rating} ctaFor={data.ctaFor} />}
+
         {
-          cta && (
+          !data.ctaTool && cta && (
             <aside class="cta-box" aria-label="Khuyến nghị">
               <p class="cta-eyebrow">Khuyến nghị của {SITE_NAME}</p>
               <p class="cta-text">Sẵn sàng trải nghiệm <strong>{cta.label}</strong>?</p>

@@ -27,7 +27,7 @@ function parseArgs(argv) {
     draft: true,
     image: true,
     local: false,
-    author: "Cú Đêm",
+    author: "Soi Tool",
     textModel: process.env.GEMINI_TEXT_MODEL || DEFAULT_TEXT_MODEL,
     imageModel: process.env.GEMINI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL,
     words: process.env.AI_POST_WORDS || "900-1300",

@@ -1,0 +1,85 @@
+---
+// Hộp "verdict" cuối bài money: tên tool + điểm + hợp với ai + nút /go/<slug>.
+// Render khi bài có frontmatter ctaTool (slug trong scripts/data/affiliate-map.json).
+import affiliateMap from "../../scripts/data/affiliate-map.json";
+import { SITE_NAME } from "../consts";
+
+interface Props {
+  slug: string;
+  rating?: number;
+  ctaFor?: string[];
+}
+
+const { slug, rating, ctaFor = [] } = Astro.props;
+const tool = affiliateMap.links.find((l) => l.slug === slug && (l.url || l.website));
+---
+
+{
+  tool && (
+    <aside class="tool-cta" aria-label={`Khuyến nghị: ${tool.name}`}>
+      <p class="eyebrow">Khuyến nghị của {SITE_NAME}</p>
+      <div class="row">
+        <h3 class="name">{tool.name}</h3>
+        {typeof rating === "number" && (
+          <span class="score" aria-label={`${rating} trên 5 điểm`}>★ {rating.toFixed(1)}/5</span>
+        )}
+      </div>
+      {ctaFor.length > 0 && (
+        <ul class="fits">
+          {ctaFor.map((line) => (
+            <li>{line}</li>
+          ))}
+        </ul>
+      )}
+      <a class="btn" href={`/go/${tool.slug}`} rel="sponsored nofollow" target="_blank">
+        {tool.label || `Dùng thử ${tool.name}`} →
+      </a>
+      <p class="fineprint">Link tiếp thị liên kết — bạn không tốn thêm chi phí.</p>
+    </aside>
+  )
+}
+
+<style>
+  .tool-cta {
+    margin: 2rem 0 0;
+    padding: 1.5rem 1.5rem 1.25rem;
+    border-radius: var(--radius, 16px);
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary, #2563eb) 0%, var(--primary-700, #1e3a8a) 100%);
+  }
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+  .row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .name { margin: 0; font-size: 1.5rem; color: #fff; }
+  .score {
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+  }
+  .fits { margin: 0.75rem 0 1rem; padding-left: 1.2rem; }
+  .fits li { margin: 0.25rem 0; line-height: 1.5; }
+  .btn {
+    display: inline-block;
+    background: #fff;
+    color: var(--primary-700, #1e3a8a);
+    font-weight: 800;
+    padding: 12px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+  }
+  .btn:hover { opacity: 0.92; text-decoration: none; }
+  .fineprint { margin: 0.75rem 0 0; font-size: 0.78rem; opacity: 0.8; }
+</style>

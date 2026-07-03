@@ -1,105 +1,101 @@
-# Cú Đêm — blog review công cụ AI & SaaS
+# Soi Tool — blog affiliate review công cụ AI & SaaS
 
-Blog tĩnh tiếng Việt đánh giá & so sánh công cụ AI/SaaS cho dev và doanh nghiệp nhỏ, kèm pipeline sinh bài tự động bằng Gemini. Build bằng [Astro 5](https://astro.build), deploy Cloudflare Pages.
+Blog tĩnh tiếng Việt **soi kỹ và so sánh công cụ AI/SaaS** cho dev và doanh nghiệp nhỏ, thiết kế để **kiếm tiền affiliate**: pipeline sinh bài bằng AI (Claude Code/Gemini), hạ tầng link `/go/` đo được click, hộp CTA chuyển đổi. Build bằng [Astro 5](https://astro.build), deploy Cloudflare Pages.
 
-## Kiến trúc
+## Mô hình kiếm tiền (đọc trước)
 
 ```
-Dò trend (RSS miễn phí) ──► Gemini chọn đề tài ──► Viết bài (grounding Google Search,
-                                                    kèm nguồn, chống bịa số liệu)
-        │                                                    │
-        ▼                                                    ▼
-  scripts/fetch-trends.mjs                        Ảnh cover (bài nguồn / stock / AI)
-                                                    → WebP → R2 hoặc public/ai-images
-                                                             │
-                                                             ▼
-                                              Nhúng video YouTube + chèn affiliate
-                                                             │
-                                                             ▼
-                                             File .md trong src/content/posts (draft)
-                                                             │
-                                              npm run build: OG image (satori)
-                                              → astro build → pagefind (tìm kiếm)
+Bài MONEY (review/so sánh tool có affiliate)  ──►  Người đọc bấm /go/<tool>
+        ▲                                                    │
+  npm run ai:money                                           ▼
+  (hàng đợi money-queue.json)                      Link affiliate thật (điền trong
+                                                   affiliate-map.json khi được duyệt)
+Bài TREND (kéo traffic, ai:auto)  ──► internal link ──► bài money      ──► HOA HỒNG
 ```
 
-## Lệnh thường dùng
+- **Mọi link tool trong bài đều là `/go/<slug>`** → đổi link trong `scripts/data/affiliate-map.json` là toàn bộ bài cũ tự trỏ đích mới, không sửa bài. Mỗi click = 1 pageview `/go/*` trên Cloudflare Web Analytics → đo được tool nào ra click.
+- **Trạng thái tool trong map**: `active` (có link thật, đang kiếm tiền) / `pending` (chương trình mở, chờ bạn đăng ký — có sẵn link `signup`) / `closed` / `none`.
+
+## Checklist kích hoạt kiếm tiền (việc của bạn, làm 1 lần)
+
+1. **Tạo PayPal hoặc Payoneer** để nhận hoa hồng.
+2. **Đăng ký các chương trình** (link `signup` trong `scripts/data/affiliate-map.json`): ưu tiên PartnerStack (Jasper + nhiều tool), ElevenLabs, Impact (Semrush), GetResponse. Khai báo website: `https://soitool.pages.dev` — site đã live + có bài nên dễ duyệt.
+3. Được duyệt → dán link affiliate vào trường `url`, đổi `status: "active"` → chạy `npm run deploy`.
+4. **Bật Cloudflare Web Analytics** (2 phút): dash.cloudflare.com → Web Analytics → Add site → copy token → dán vào `CF_ANALYTICS_TOKEN` trong `src/consts.ts` → deploy. Xem click affiliate: lọc pageview theo path `/go/`.
+5. **Google Search Console**: thêm site, submit `https://soitool.pages.dev/sitemap-index.xml`.
+6. (Khuyến nghị) Mua domain riêng `soitool.com`/`.vn` (~300k/năm) càng sớm càng tốt — đổi `SITE_URL` + gắn vào Pages project.
+
+## Nhịp vận hành hàng tuần
+
+```bash
+npm run ai:money               # 2 bài money/tuần (bottom-funnel, có CTA affiliate)
+npm run ai:auto -- --claude    # 1 bài trend/tuần (kéo traffic)
+# → duyệt bài trong src/content/posts, xóa "draft: true"
+npm run deploy                 # build + đưa lên web
+npm run index:ping             # báo Google/Bing index
+```
+
+SEO cần 3-6 tháng tích luỹ — kiên trì đăng đều quan trọng hơn đăng nhiều.
+
+## Lệnh đầy đủ
 
 | Lệnh | Việc |
 |---|---|
 | `npm run dev` | Chạy dev server |
 | `npm run check` | Typecheck (`astro check`) |
-| `npm run build` | Build đầy đủ (OG image → astro → pagefind) ra `dist/` |
-| `npm run ai:trends` | Dò trend, gợi ý đề tài |
-| `npm run ai:auto` | Dò trend → tự tạo 1 bài **draft** (thêm `-- --count 3` để tạo 3 bài) |
+| `npm run build` | Build đầy đủ ra `dist/` |
+| `npm run deploy` | Build + đẩy lên Cloudflare Pages (https://soitool.pages.dev) |
+| `npm run ai:money` | Sinh bài money từ hàng đợi (`-- --list` xem hàng đợi) |
+| `npm run ai:auto` | Dò trend → tạo bài draft (`-- --claude` dùng Claude Code) |
 | `npm run ai:post -- "Chủ đề"` | Viết bài từ chủ đề tự chọn |
-| `npm run deploy` | Build + đẩy lên Cloudflare Pages (site: https://cu-dem.pages.dev) |
+| `npm run ai:trends` | Dò trend, gợi ý đề tài |
 | `npm run index:ping` | Ping IndexNow sau khi deploy |
 
-Duyệt bài draft: mở file `.md` trong `src/content/posts/`, đọc/sửa nội dung, xóa dòng `draft: true`, commit + push.
+## Engine sinh bài: Claude Code hoặc Gemini
 
-## Engine sinh bài: Gemini API hoặc Claude Code
-
-Pipeline hỗ trợ 2 engine, chọn bằng flag `--engine claude|gemini` (hoặc `--claude`), hoặc đặt `AI_ENGINE=claude` trong `.env` để làm mặc định:
-
-| | `gemini` (mặc định) | `claude` |
+| | `claude` | `gemini` |
 |---|---|---|
-| Cần gì | `GEMINI_API_KEY` | Đã cài + đăng nhập Claude Code CLI (gói Pro/Max) |
-| Chi phí | Free tier / theo API | Trừ vào quota gói trả phí — 0 đồng thêm |
-| Grounding | Google Search grounding | Claude tự WebSearch/WebFetch, trả nguồn thật |
-| Ảnh AI | Có (`--ai-image`) | Không — tự hạ về ảnh bài nguồn/stock |
+| Cần gì | Đã cài + đăng nhập Claude Code CLI (gói Pro/Max) | `GEMINI_API_KEY` |
+| Chi phí | Trừ quota gói trả phí — 0 đồng thêm | Free tier / theo API |
+| Grounding | Tự WebSearch/WebFetch, trả nguồn thật | Google Search grounding |
+
+- `ai:money` mặc định engine **claude**; `ai:auto`/`ai:post` mặc định gemini (đổi bằng `--engine claude`, `--claude`, hoặc `AI_ENGINE=claude` trong `.env`).
+- `CLAUDE_MODEL` (env) hoặc `--claude-model` để override model.
+
+## Biến môi trường (`.env`)
+
+- `GEMINI_API_KEY` — cần khi dùng engine gemini.
+- `AI_ENGINE` — `claude` hoặc `gemini` (mặc định toàn cục).
+- `YOUTUBE_API_KEY`, `PEXELS_API_KEY`, `PIXABAY_API_KEY` — tùy chọn (video, ảnh stock).
+- `R2_*` — tùy chọn, lưu ảnh Cloudflare R2 (xem `HUONG-DAN-LUU-TRU-R2-SHEET.md`).
+- `INDEXNOW_KEY` — tùy chọn.
+
+**Không commit `.env`** (đã ignore).
+
+## Deploy (Cloudflare Pages — project `soitool`)
 
 ```bash
-npm run ai:auto -- --claude              # dò trend + viết 1 bài draft bằng Claude Code
-npm run ai:post -- "Chủ đề" --claude     # viết bài từ chủ đề tự chọn
-npm run ai:trends -- --claude            # chỉ dò + xếp hạng đề tài
+npm run deploy   # direct upload; git push KHÔNG tự deploy
 ```
 
-- `CLAUDE_MODEL` (env) hoặc `--claude-model` để override model (vd `opus`, `sonnet`); mặc định dùng model của phiên Claude Code.
-- Engine `claude` chỉ chạy **local** (dùng đăng nhập của bạn). GitHub Actions vẫn chạy engine `gemini` — muốn chạy claude trên CI cần thêm `CLAUDE_CODE_OAUTH_TOKEN`, chưa cấu hình sẵn.
-
-## Biến môi trường (`.env`, xem `.env.example`)
-
-- `GEMINI_API_KEY` — **bắt buộc** cho pipeline sinh bài.
-- `YOUTUBE_API_KEY`, `PEXELS_API_KEY`, `PIXABAY_API_KEY` — tùy chọn (nhúng video, ảnh stock); thiếu thì script tự bỏ qua.
-- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE` — tùy chọn, lưu ảnh lên Cloudflare R2 (xem `HUONG-DAN-LUU-TRU-R2-SHEET.md`).
-- `INDEXNOW_KEY`, `DEPLOY_HOOK_URL` — tùy chọn.
-
-**Không commit `.env`** (đã có trong `.gitignore`).
-
-## Deploy (Cloudflare Pages — project `cu-dem`)
-
-Site live tại **https://cu-dem.pages.dev**, deploy theo kiểu **direct upload**:
-
-```bash
-npm run deploy   # build + wrangler pages deploy (cần wrangler đã đăng nhập)
-```
-
-> Lưu ý: `git push` KHÔNG tự deploy (project chưa nối Git). Muốn tự deploy khi push, vào
-> dash.cloudflare.com → Pages → cu-dem → Settings → nối repo `tuhuudev/cu-dem`,
-> hoặc cứ dùng `npm run deploy` sau mỗi lần duyệt bài.
+Muốn push-là-deploy: dash.cloudflare.com → Pages → soitool → Settings → nối repo GitHub.
 
 ## Tự động đăng bài theo lịch (GitHub Actions)
 
-Workflow `.github/workflows/auto-post.yml` chạy `npm run ai:auto` (engine gemini) thứ 2 & thứ 5 hằng tuần, commit bài **draft** vào repo `tuhuudev/cu-dem`. Để kích hoạt, chạy 2 lệnh (cần làm 1 lần):
+Workflow `.github/workflows/auto-post.yml` chạy `ai:auto` (engine gemini) thứ 2 & 5 hằng tuần, commit bài draft. Kích hoạt (1 lần):
 
 ```bash
-gh secret set GEMINI_API_KEY -R tuhuudev/cu-dem   # dán key khi được hỏi
-gh api -X PUT repos/tuhuudev/cu-dem/actions/permissions/workflow -f default_workflow_permissions=write
+gh secret set GEMINI_API_KEY -R tuhuudev/soitool
+gh api -X PUT repos/tuhuudev/soitool/actions/permissions/workflow -f default_workflow_permissions=write
 ```
 
-Có thể chạy tay từ tab **Actions → Auto trend post → Run workflow**.
+## Cấu hình còn treo (trong `src/consts.ts`)
 
-## Việc cần cấu hình trước khi vận hành thật (trong `src/consts.ts`)
-
-- [ ] `SITE_URL` — đổi sang domain riêng khi có (đang là `cudem.pages.dev`); nhớ sửa cả `Sitemap:` trong `public/robots.txt`.
-- [ ] `BUTTONDOWN_USERNAME` — **xác nhận đúng slug** trên buttondown.com; sai slug thì form đăng ký fail âm thầm. Để trống nếu chưa dùng.
-- [ ] `PLAUSIBLE_DOMAIN` hoặc `GA4_ID` — bật analytics (hoặc bật Cloudflare Web Analytics trong dashboard, không cần sửa code).
-- [ ] `GISCUS` — bật bình luận (repo GitHub public + bật Discussions, lấy thông số tại giscus.app).
+- [ ] `CF_ANALYTICS_TOKEN` — bật đo click (bước 4 checklist trên).
+- [ ] `BUTTONDOWN_USERNAME` — bật form email khi có tài khoản Buttondown thật.
+- [ ] `GISCUS` — bật bình luận (repo public đã sẵn sàng, lấy thông số tại giscus.app).
 - [ ] `FACEBOOK_URL`, `YOUTUBE_URL`, `TWITTER_HANDLE` — điền khi có kênh.
-- [ ] `scripts/data/affiliate-map.json` — điền link affiliate **thật** và đổi `network` khác `"placeholder"` (entry `placeholder` bị bỏ qua, không được chèn vào bài).
 
 ## Tài liệu khác
 
-- `DEPLOY.md` — deploy Cloudflare Pages / Vercel / Netlify.
-- `HUONG-DAN-TAO-BAI-BANG-GEMINI.md` — chi tiết pipeline sinh bài.
-- `HUONG-DAN-LUU-TRU-R2-SHEET.md` — cấu hình lưu ảnh R2.
+- `DEPLOY.md` — deploy chi tiết; `HUONG-DAN-TAO-BAI-BANG-GEMINI.md` — pipeline sinh bài; `HUONG-DAN-LUU-TRU-R2-SHEET.md` — ảnh R2.

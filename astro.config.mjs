@@ -6,7 +6,8 @@ import { SITE_URL } from "./src/consts.ts";
 export default defineConfig({
   // QUAN TRỌNG cho SEO: phải khai báo đúng tên miền để sinh sitemap + canonical chuẩn
   site: SITE_URL,
-  integrations: [sitemap()],
+  // /go/* la trang redirect affiliate (noindex) -> khong dua vao sitemap
+  integrations: [sitemap({ filter: (page) => !page.includes("/go/") })],
   // Build ra HTML tĩnh hoàn toàn (mặc định) -> phục vụ từ CDN, load cực nhanh
   compressHTML: true,
   build: {

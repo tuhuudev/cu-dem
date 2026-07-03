@@ -4,7 +4,7 @@ description: "So sánh chi tiết Cursor và GitHub Copilot tháng 7/2026: bản
 pubDate: 2026-07-02
 category: "Công cụ AI"
 tags: ["cursor", "github-copilot", "ai-coding-assistant"]
-author: "Cú Đêm"
+author: "Soi Tool"
 takeaways:
   - "GitHub Copilot Pro giá $10/tháng, rẻ bằng nửa Cursor Pro ($20/tháng), và vừa có thêm Kimi K2.7 Code — model open-weight đầu tiên trong model picker."
   - "Kimi K2.7 Code có giá API $0.95/$4.00 mỗi triệu token, rẻ hơn hẳn các frontier model, phù hợp chạy agent dài mà ít tốn credit."
@@ -27,7 +27,7 @@ ogImage: "/ai-images/cursor-vs-github-copilot-2026-kimi-k27-do-bo-chon-ben-nao.w
 
 ## Vì sao lúc này phải so lại Cursor và GitHub Copilot?
 
-Hai tin liên tiếp trong một tháng khiến cán cân giữa hai trợ lý code phổ biến nhất thay đổi. Ngày 1/7/2026, GitHub đưa Kimi K2.7 Code — model mã nguồn mở của Moonshot AI — vào model picker của Copilot, trở thành model open-weight đầu tiên có mặt chính thức ở đây. Trước đó, Cursor công bố dữ liệu CursorBench 3.1 cho thấy model Composer 2.5 của họ dẫn đầu benchmark nội bộ. Cùng lúc, Copilot vừa chuyển hẳn sang tính tiền theo mức dùng (AI Credits) từ 1/6/2026. Nếu bạn đang trả $10–20 mỗi tháng cho một trợ lý code, đây là thời điểm hợp lý để xem lại số tiền đó đang mua được gì.
+Hai tin liên tiếp trong một tháng khiến cán cân giữa hai trợ lý code phổ biến nhất thay đổi. Ngày 1/7/2026, GitHub đưa Kimi K2.7 Code — model mã nguồn mở của Moonshot AI — vào model picker của Copilot, trở thành model open-weight đầu tiên có mặt chính thức ở đây. Trước đó, <a href="/go/cursor" rel="sponsored nofollow" target="_blank">Cursor</a> công bố dữ liệu CursorBench 3.1 cho thấy model Composer 2.5 của họ dẫn đầu benchmark nội bộ. Cùng lúc, Copilot vừa chuyển hẳn sang tính tiền theo mức dùng (AI Credits) từ 1/6/2026. Nếu bạn đang trả $10–20 mỗi tháng cho một trợ lý code, đây là thời điểm hợp lý để xem lại số tiền đó đang mua được gì.
 
 ## Bảng so sánh nhanh (tháng 7/2026)
 
@@ -52,7 +52,7 @@ Cần nói thẳng một điều: toàn bộ benchmark của K2.7 tính đến l
 
 ## CursorBench 3.1 nói gì về Cursor?
 
-CursorBench là benchmark nội bộ của Cursor, xây từ phiên làm việc thật của đội kỹ sư Cursor, đo hành vi agent dài hơi trong chính agent loop của Cursor. Bản 3.1 (cập nhật tháng 5/2026) tăng độ khó, và ở snapshot công khai: Composer 2.5 dẫn đầu với 63,2%, GPT-5.5 đạt 59,2%, Claude Opus 4.8 đạt 58,4%.
+CursorBench là benchmark nội bộ của Cursor, xây từ phiên làm việc thật của đội kỹ sư Cursor, đo hành vi agent dài hơi trong chính agent loop của Cursor. Bản 3.1 (cập nhật tháng 5/2026) tăng độ khó, và ở snapshot công khai: Composer 2.5 dẫn đầu với 63,2%, GPT-5.5 đạt 59,2%, <a href="/go/claude" rel="sponsored nofollow" target="_blank">Claude</a> Opus 4.8 đạt 58,4%.
 
 Điểm cần tỉnh táo: đây là benchmark do chính Cursor vận hành, không tái lập độc lập được, nên nó chứng minh Cursor tối ưu model riêng rất tốt cho môi trường của họ — chứ không chứng minh Cursor thắng Copilot. Một bài test độc lập (Tech-Insider, cập nhật tháng 3/2026) cho kết quả ngược chiều: Copilot giải 56% task SWE-bench so với khoảng 52% của Cursor, nhưng Cursor xử lý nhanh hơn khoảng 30%. Tóm gọn: Copilot nhỉnh về độ chính xác trên benchmark công khai, Cursor nhỉnh về tốc độ agent.
 
